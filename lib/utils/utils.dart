@@ -5,6 +5,11 @@ import 'package:fluttertoast/fluttertoast.dart';
 
 class Utils {
 
+  static void fieldFocusChange(BuildContext context, FocusNode current, FocusNode next){
+    current.unfocus();
+    FocusScope.of(context).requestFocus(next);
+  }
+
   static toastMessage(String msg){
     Fluttertoast.showToast(msg: msg,
     backgroundColor: Colors.black,
@@ -24,15 +29,14 @@ class Utils {
           message,
           style: const TextStyle(fontSize: 16), // Adjust font size
         ),
-        backgroundColor: Colors.black26,
-        flushbarPosition: FlushbarPosition.BOTTOM,
+        backgroundColor: Colors.yellowAccent,
+        flushbarPosition: FlushbarPosition.TOP,
         borderRadius: BorderRadius.circular(12),
-        title: 'test title',
-        messageColor: Colors.white,
+        messageColor: Colors.black,
         duration: const Duration(seconds: 3),
         reverseAnimationCurve: Curves.easeInOut,
         positionOffset: 20,
-        icon: const Icon(Icons.error, size: 28, color: Colors.white),
+        icon: const Icon(Icons.error, size: 28, color: Colors.black),
       )..show(context),
     );
   }
