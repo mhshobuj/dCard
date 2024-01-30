@@ -17,20 +17,26 @@ class RoundButton extends StatelessWidget {
   Widget build(BuildContext context) {
     return InkWell(
       onTap: onPress,
-      child: Container(
-        height: 40,
-        width: 200,
-        decoration: BoxDecoration(
-          color: AppColors.buttonColor,
-          borderRadius: BorderRadius.circular(10),
-        ),
-        child: Center(
-          child: loading == true // Explicitly check for true
-              ? const CircleAvatar()
-              : Text(
-                  title,
-                  style: const TextStyle(color: AppColors.whiteColor),
-                ),
+      child: Padding(
+        padding: const EdgeInsets.all(10.0),
+        child: Container(
+          height: 50, // Adjusted height to match TextFields
+          width: double.infinity, // Expand to fill available space
+          decoration: BoxDecoration(
+            color: AppColors.buttonColor,
+            borderRadius: BorderRadius.circular(30), // Match TextField border radius
+          ),
+          child: Center(
+            child: loading == true
+                ? const CircleAvatar()
+                : Text(
+              title,
+              style: const TextStyle(
+                color: AppColors.whiteColor,
+                fontSize: 18, // Adjust font size as needed
+              ),
+            ),
+          ),
         ),
       ),
     );
