@@ -13,7 +13,7 @@ class LoginScreen extends StatefulWidget {
 }
 
 class _LoginScreenState extends State<LoginScreen> {
-  final ValueNotifier<bool> _obsecurePassword = ValueNotifier<bool>(true);
+  final ValueNotifier<bool> _obsecurePassword = ValueNotifier(true);
 
   final TextEditingController _emailController = TextEditingController();
   final TextEditingController _passwordController = TextEditingController();
@@ -87,7 +87,9 @@ class _LoginScreenState extends State<LoginScreen> {
                   prefixIcon: const Icon(Icons.lock_clock_outlined),
                   suffixIcon: InkWell(
                     onTap: () {
-                      _obsecurePassword.value = !_obsecurePassword.value;
+                      setState(() {
+                        _obsecurePassword.value = !_obsecurePassword.value;
+                      });
                     },
                     child: Icon(
                       _obsecurePassword.value
