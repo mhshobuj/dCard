@@ -1,7 +1,9 @@
-import 'package:dma_card/res/components/color.dart';
+import 'package:dma_card/res/color.dart';
 import 'package:dma_card/res/components/round_button.dart';
 import 'package:dma_card/utils/utils.dart';
+import 'package:dma_card/view_model/auth_view_model.dart';
 import 'package:flutter/material.dart';
+import 'package:provider/provider.dart';
 
 class LoginScreen extends StatefulWidget {
   const LoginScreen({super.key});
@@ -35,6 +37,9 @@ class _LoginScreenState extends State<LoginScreen> {
 
   @override
   Widget build(BuildContext context) {
+
+    final authViewMode = Provider.of<AuthViewModel>(context);
+
     final height = MediaQuery.of(context).size.height * 1;
     return Scaffold(
       appBar: AppBar(
@@ -100,6 +105,7 @@ class _LoginScreenState extends State<LoginScreen> {
             SizedBox(height: height * 0.085),
             RoundButton(
               title: "Login",
+              loading: authViewMode.loading,
               onPress: () {
                 if (_emailController.text.isEmpty) {
                   Utils.flushBarErrorMessage("The email/phone is required!", context);
@@ -110,7 +116,11 @@ class _LoginScreenState extends State<LoginScreen> {
                   Utils.flushBarErrorMessage(
                       "The password must have 8 digit!", context);
                 } else {
-                  Utils.flushBarErrorMessage("API CALL SUCCESS!", context);
+                  final Map<String, String> data = {
+                    'usr_email': _emailController.text.toString(),
+                    'password': _passwordController.text.toString(),
+                  };
+                  authViewMode.loginApi(data, context);
                 }
               },
             )

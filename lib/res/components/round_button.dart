@@ -1,4 +1,4 @@
-import 'package:dma_card/res/components/color.dart';
+import 'package:dma_card/res/color.dart';
 import 'package:flutter/material.dart';
 
 class RoundButton extends StatelessWidget {
@@ -24,11 +24,11 @@ class RoundButton extends StatelessWidget {
           width: double.infinity, // Expand to fill available space
           decoration: BoxDecoration(
             color: AppColors.buttonColor,
-            borderRadius: BorderRadius.circular(30), // Match TextField border radius
+            borderRadius: BorderRadius.circular(15), // Match TextField border radius
           ),
           child: Center(
             child: loading == true
-                ? const CircleAvatar()
+                ? const CircularProgressIndicator(color: Colors.white,)
                 : Text(
               title,
               style: const TextStyle(
