@@ -7,25 +7,50 @@ import '../utils/routes/routes_name.dart';
 
 class AuthViewModel with ChangeNotifier{
   final _myRepo = AuthRepository();
-  bool _loading = false;
-  bool get loading => _loading;
 
-  setLoading(bool value){
-    _loading = value;
+  bool _loginLoading = false;
+  bool get loginLoading => _loginLoading;
+  setLoginLoading(bool value){
+    _loginLoading = value;
+    notifyListeners();
+  }
+
+  bool _signUpLoading = false;
+  bool get signUpLoading => _signUpLoading;
+  setSignUpLoading(bool value){
+    _signUpLoading = value;
     notifyListeners();
   }
 
   Future<void> loginApi(dynamic data, BuildContext context) async {
-    setLoading(true);
+    setLoginLoading(true);
     _myRepo.loginApi(data).then((value){
-      setLoading(false);
-      Utils.flushBarErrorMessage(value.toString(), context);
+      setLoginLoading(false);
+      Utils.flushBarErrorMessage("LogIn Successfully", context);
       Navigator.pushNamed(context, RoutesName.home);
       if (kDebugMode) {
         print(value.toString());
       }
     }).onError((error, stackTrace){
-      setLoading(false);
+      setLoginLoading(false);
+      if (kDebugMode) {
+        Utils.flushBarErrorMessage(error.toString(), context);
+        print(error.toString());
+      }
+    });
+  }
+
+  Future<void> signUpApi(dynamic data, BuildContext context) async {
+    setSignUpLoading(true);
+    _myRepo.signUpApi(data).then((value){
+      setSignUpLoading(false);
+      Utils.flushBarErrorMessage("SignUp Successfully", context);
+      Navigator.pushNamed(context, RoutesName.login);
+      if (kDebugMode) {
+        print(value.toString());
+      }
+    }).onError((error, stackTrace){
+      setSignUpLoading(false);
       if (kDebugMode) {
         Utils.flushBarErrorMessage(error.toString(), context);
         print(error.toString());

@@ -1,5 +1,6 @@
 import 'package:dma_card/res/color.dart';
 import 'package:dma_card/res/components/round_button.dart';
+import 'package:dma_card/utils/routes/routes_name.dart';
 import 'package:dma_card/utils/utils.dart';
 import 'package:dma_card/view_model/auth_view_model.dart';
 import 'package:flutter/material.dart';
@@ -61,7 +62,7 @@ class _LoginScreenState extends State<LoginScreen> {
                 decoration: InputDecoration(
                   labelText: 'Email/Phone',
                   hintText: 'Enter email or phone',
-                  prefixIcon: const Icon(Icons.person),
+                  prefixIcon: const Icon(Icons.supervised_user_circle_outlined),
                   border: OutlineInputBorder(
                     borderRadius: BorderRadius.circular(20),
                     borderSide: const BorderSide(color: Colors.black, width: 2.0),
@@ -107,7 +108,7 @@ class _LoginScreenState extends State<LoginScreen> {
             SizedBox(height: height * 0.085),
             RoundButton(
               title: "Login",
-              loading: authViewMode.loading,
+              loading: authViewMode.loginLoading,
               onPress: () {
                 if (_emailController.text.isEmpty) {
                   Utils.flushBarErrorMessage("The email/phone is required!", context);
@@ -125,7 +126,13 @@ class _LoginScreenState extends State<LoginScreen> {
                   authViewMode.loginApi(data, context);
                 }
               },
-            )
+            ),
+            SizedBox(height: height * 0.02),
+            InkWell(
+              onTap: (){
+                Navigator.pushNamed(context, RoutesName.signUp);
+              },
+                child: const Text("Don't have an account? Sign Up")),
           ],
         ),
       ),
