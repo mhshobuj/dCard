@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:intl/intl.dart';
 import 'package:provider/provider.dart';
 
 import '../res/color.dart';
@@ -31,6 +32,7 @@ class SignUpScreen extends StatefulWidget {
 
    String _selectedGender = 'male';
    DateTime? _selectedDate;
+   bool isTermsAccepted = false;
 
    @override
    void dispose() {
@@ -184,6 +186,38 @@ class SignUpScreen extends StatefulWidget {
                      ],
                    ),
                  ),
+                 const SizedBox(height: 15.0), // Adjust spacing as needed
+                 Padding(
+                   padding: const EdgeInsets.all(10.0),
+                   child: Row(
+                     children: [
+                       const Text("Birthday:"),
+                       const SizedBox(width: 10),
+                       Expanded( // Allow expansion for date picker
+                         child: ElevatedButton(
+                           onPressed: () async {
+                             final selectedDate = await showDatePicker(
+                               context: context,
+                               initialDate: DateTime.now(),
+                               firstDate: DateTime(1900),
+                               lastDate: DateTime.now(),
+                             );
+                             if (selectedDate != null) {
+                               setState(() {
+                                 _selectedDate = selectedDate;
+                               });
+                             }
+                           },
+                           child: Text(
+                             _selectedDate != null
+                                 ? DateFormat('dd-MM-yyyy').format(_selectedDate!)
+                                 : 'Choose Birthday',
+                           ),
+                         ),
+                       ),
+                     ],
+                   ),
+                 ),
                  const SizedBox(height: 5.0),// Add space between fields
                  Padding(
                    padding: const EdgeInsets.all(10.0),
@@ -216,26 +250,45 @@ class SignUpScreen extends StatefulWidget {
                      ),
                    ),
                  ),
-                 const SizedBox(height: 30),
+                 const SizedBox(height: 5.0), // Add space between fields
+                 Padding(
+                   padding: const EdgeInsets.all(10.0),
+                   child: Row(
+                     children: [
+                       Checkbox(
+                         value: isTermsAccepted,
+                         onChanged: (value) {
+                           setState(() {
+                             isTermsAccepted = value!;
+                           });
+                         },
+                       ),
+                       const Text('I agree to the Terms & Conditions and Privacy Policy'),
+                     ],
+                   ),
+                 ),
+                 const SizedBox(height: 20),
                  RoundButton(
                    title: "SignUp",
                    loading: authViewMode.signUpLoading,
-                   onPress: () {
-                     if (_firstNameController.text.isEmpty) {
-                       Utils.flushBarErrorMessage("The email/phone is required!", context);
-                     } else if (_passwordController.text.isEmpty) {
-                       Utils.flushBarErrorMessage(
-                           "The password is required!", context);
-                     } else if (_passwordController.text.length < 8) {
-                       Utils.flushBarErrorMessage(
-                           "The password must have 8 digit!", context);
-                     } else {
-                       final Map<String, String> data = {
-                         'usr_email': _firstNameController.text.toString(),
-                         'password': _passwordController.text.toString(),
-                       };
-                       authViewMode.signUpApi(data, context);
-                     }
+                   onPress: (){
+                       if (_emailController.text.isEmpty) {
+                         Utils.flushBarErrorMessage("The email/phone is required!", context);
+                       } else if (_passwordController.text.isEmpty) {
+                         Utils.flushBarErrorMessage(
+                             "The password is required!", context);
+                       } else if (_passwordController.text.length < 8) {
+                         Utils.flushBarErrorMessage(
+                             "The password must have 8 digit!", context);
+                       } else if(!isTermsAccepted){
+                         Utils.flushBarErrorMessage("Please agree with the terms and conditions", context);
+                       }else {
+                         final Map<String, String> data = {
+                           'usr_email': _emailController.text.toString(),
+                           'password': _passwordController.text.toString(),
+                         };
+                         //authViewMode.loginApi(data, context);
+                       }
                    },
                  ),
                  const SizedBox(height: 20),
@@ -244,6 +297,7 @@ class SignUpScreen extends StatefulWidget {
                        Navigator.pushNamed(context, RoutesName.login);
                      },
                      child: const Text("Already have an account? Login")),
+                 const SizedBox(height: 20),
                ],
              ),
            ),
