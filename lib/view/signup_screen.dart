@@ -3,6 +3,7 @@ import 'package:intl/intl.dart';
 import 'package:provider/provider.dart';
 
 import '../res/color.dart';
+import '../res/components/otp_popup.dart';
 import '../res/components/round_button.dart';
 import '../utils/routes/routes_name.dart';
 import '../utils/utils.dart';
@@ -58,6 +59,7 @@ class SignUpScreen extends StatefulWidget {
    Widget build(BuildContext context) {
 
      final authViewMode = Provider.of<AuthViewModel>(context);
+     ValueNotifier<bool> isVerifiedNotifier = ValueNotifier(false);
 
      return Scaffold(
          appBar: AppBar(
@@ -150,12 +152,10 @@ class SignUpScreen extends StatefulWidget {
                          borderSide: const BorderSide(color: Colors.black, width: 2.0),
                        ),
                      ),
-                     onFieldSubmitted: (value) {
-                       Utils.fieldFocusChange(context, phoneFocusNode, passwordFocusNode);
-                     },
                    ),
                  ),
                  const SizedBox(height: 5.0),
+                 // Gender selection
                  Padding(
                    padding: const EdgeInsets.all(10.0),
                    child: Row(
@@ -187,13 +187,14 @@ class SignUpScreen extends StatefulWidget {
                    ),
                  ),
                  const SizedBox(height: 15.0), // Adjust spacing as needed
+                 // Birthday selection
                  Padding(
                    padding: const EdgeInsets.all(10.0),
                    child: Row(
                      children: [
                        const Text("Birthday:"),
                        const SizedBox(width: 10),
-                       Expanded( // Allow expansion for date picker
+                       Expanded(
                          child: ElevatedButton(
                            onPressed: () async {
                              final selectedDate = await showDatePicker(
@@ -271,9 +272,14 @@ class SignUpScreen extends StatefulWidget {
                  RoundButton(
                    title: "SignUp",
                    loading: authViewMode.signUpLoading,
-                   onPress: (){
-                       if (_emailController.text.isEmpty) {
+                   onPress: () async {
+                     if (_emailController.text.isEmpty) {
+                       Utils.flushBarErrorMessage("The email/phone is required!", context);
+                       } else if (_emailController.text.isEmpty) {
                          Utils.flushBarErrorMessage("The email/phone is required!", context);
+                       } else if (_selectedDate == null) {
+                         Utils.flushBarErrorMessage(
+                             "Please select your birthday.", context);
                        } else if (_passwordController.text.isEmpty) {
                          Utils.flushBarErrorMessage(
                              "The password is required!", context);
@@ -283,11 +289,25 @@ class SignUpScreen extends StatefulWidget {
                        } else if(!isTermsAccepted){
                          Utils.flushBarErrorMessage("Please agree with the terms and conditions", context);
                        }else {
-                         final Map<String, String> data = {
+                         /*final Map<String, String> data = {
                            'usr_email': _emailController.text.toString(),
                            'password': _passwordController.text.toString(),
                          };
-                         //authViewMode.loginApi(data, context);
+                         authViewMode.loginApi(data, context);*/
+
+                         await sendOtp();
+
+                         showDialog(
+                           context: context,
+                           builder: (context) => OtpPopup(
+                             isVerified: isVerifiedNotifier, // Pass isVerifiedNotifier
+                             onSubmit: (otp) async {
+                               // Handle OTP verification logic here
+                               // Update `isVerifiedNotifier` based on verification result
+                               // ...
+                             },
+                           ),
+                         );
                        }
                    },
                  ),
@@ -304,5 +324,9 @@ class SignUpScreen extends StatefulWidget {
          ),
        );
    }
+
+  sendOtp() {
+
+  }
  }
  
