@@ -57,7 +57,6 @@ class SignUpScreen extends StatefulWidget {
 
    @override
    Widget build(BuildContext context) {
-
      final authViewMode = Provider.of<AuthViewModel>(context);
      ValueNotifier<bool> isVerifiedNotifier = ValueNotifier(false);
 
@@ -271,7 +270,7 @@ class SignUpScreen extends StatefulWidget {
                  const SizedBox(height: 20),
                  RoundButton(
                    title: "SignUp",
-                   loading: authViewMode.signUpLoading,
+                   loading: authViewMode.otpSendLoading,
                    onPress: () async {
                      if (_emailController.text.isEmpty) {
                        Utils.flushBarErrorMessage("The email/phone is required!", context);
@@ -295,16 +294,25 @@ class SignUpScreen extends StatefulWidget {
                          };
                          authViewMode.loginApi(data, context);*/
 
-                         await sendOtp();
+                         await sendOtp(context, authViewMode);
 
                          showDialog(
                            context: context,
                            builder: (context) => OtpPopup(
                              isVerified: isVerifiedNotifier, // Pass isVerifiedNotifier
                              onSubmit: (otp) async {
-                               // Handle OTP verification logic here
-                               // Update `isVerifiedNotifier` based on verification result
-                               // ...
+                               // Convert the DateTime object to a string using DateFormat
+                               final formattedDate = DateFormat('yyyy-MM-dd').format(_selectedDate!);
+                               final Map<String, String> data = {
+                                 'first_name': _firstNameController.text.toString(),
+                                 'last_name': _lastNameController.text.toString(),
+                                 'usr_email': _emailController.text.toString(),
+                                 'phone': _phoneController.text.toString(),
+                                 'password': _passwordController.text.toString(),
+                                 'otp': otp,
+                                 'birth_date': formattedDate,
+                               };
+                               authViewMode.signUpApi(data, context);
                              },
                            ),
                          );
@@ -325,8 +333,11 @@ class SignUpScreen extends StatefulWidget {
        );
    }
 
-  sendOtp() {
-
+  sendOtp(BuildContext context, AuthViewModel authViewMode) {
+    final Map<String, String> data = {
+      'phone': _phoneController.text.toString()
+    };
+    authViewMode.sendOTPApi(data, context);
   }
  }
  

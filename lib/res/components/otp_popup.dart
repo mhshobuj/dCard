@@ -113,6 +113,8 @@ class _OtpBox extends StatelessWidget {
         decoration: const InputDecoration(
           counterText: '',
           border: InputBorder.none,
+          hintText: '0',
+          hintStyle: TextStyle(color: Colors.grey), // Set the hint text color to gray
         ),
         focusNode: focusNode,
         onChanged: (value) {

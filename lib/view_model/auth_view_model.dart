@@ -22,6 +22,13 @@ class AuthViewModel with ChangeNotifier{
     notifyListeners();
   }
 
+  bool _otpSendLoading = false;
+  bool get otpSendLoading => _otpSendLoading;
+  setOTPSendLoading(bool value){
+    _otpSendLoading = value;
+    notifyListeners();
+  }
+
   Future<void> loginApi(dynamic data, BuildContext context) async {
     setLoginLoading(true);
     _myRepo.loginApi(data).then((value){
@@ -44,13 +51,30 @@ class AuthViewModel with ChangeNotifier{
     setSignUpLoading(true);
     _myRepo.signUpApi(data).then((value){
       setSignUpLoading(false);
-      Utils.flushBarErrorMessage("SignUp Successfully", context);
+      Utils.toastMessage("SignUp Successfully");
       Navigator.pushNamed(context, RoutesName.login);
       if (kDebugMode) {
         print(value.toString());
       }
     }).onError((error, stackTrace){
       setSignUpLoading(false);
+      if (kDebugMode) {
+        Utils.flushBarErrorMessage(error.toString(), context);
+        print(error.toString());
+      }
+    });
+  }
+
+  Future<void> sendOTPApi(dynamic data, BuildContext context) async {
+    setOTPSendLoading(true);
+    _myRepo.sendOTPApi(data).then((value){
+      setOTPSendLoading(false);
+      Utils.toastMessage("OTP send Successfully");
+      if (kDebugMode) {
+        print(value.toString());
+      }
+    }).onError((error, stackTrace){
+      setOTPSendLoading(false);
       if (kDebugMode) {
         Utils.flushBarErrorMessage(error.toString(), context);
         print(error.toString());

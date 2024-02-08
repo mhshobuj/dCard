@@ -24,4 +24,13 @@ class AuthRepository{
     }
   }
 
+  Future<dynamic> sendOTPApi(dynamic data)async {
+    try{
+      dynamic response = await _apiServices.getPostApiResponse(AppUrl.otpUrl, data);
+      return response;
+    }catch(e){
+      rethrow;
+    }
+  }
+
 }
