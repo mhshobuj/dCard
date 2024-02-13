@@ -17,15 +17,15 @@ class _HomeScreenState extends State<HomeScreen> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      appBar: AppBar(
+      /*appBar: AppBar(
         backgroundColor: AppColors.backgroundColor,
         centerTitle: true,
         title: const Text('Home'),
-      ),
+      ),*/
       body: Column(
         crossAxisAlignment: CrossAxisAlignment.center,
         children: [
-          const SizedBox(height: 20),
+          const SizedBox(height: 40),
           Container(
             margin: const EdgeInsets.all(5),
             width: MediaQuery.of(context).size.width - 10, // Adjusted width to account for margins

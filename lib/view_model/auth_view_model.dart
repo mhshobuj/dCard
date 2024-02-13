@@ -4,9 +4,11 @@ import 'package:flutter/cupertino.dart';
 import 'package:flutter/foundation.dart';
 
 import '../utils/routes/routes_name.dart';
+import 'login_view_model.dart';
 
 class AuthViewModel with ChangeNotifier{
   final _myRepo = AuthRepository();
+  final LoginViewModel _loginViewModel = LoginViewModel();
 
   bool _loginLoading = false;
   bool get loginLoading => _loginLoading;
@@ -31,20 +33,24 @@ class AuthViewModel with ChangeNotifier{
 
   Future<void> loginApi(dynamic data, BuildContext context) async {
     setLoginLoading(true);
-    _myRepo.loginApi(data).then((value){
+    try {
+      final loginResponse = await _myRepo.loginApi(data);
+
+      _loginViewModel.saveUser(loginResponse);
+
       setLoginLoading(false);
       Utils.flushBarErrorMessage("LogIn Successfully", context);
       Navigator.pushNamed(context, RoutesName.home);
       if (kDebugMode) {
-        print(value.toString());
+        print(loginResponse.toJson());
       }
-    }).onError((error, stackTrace){
+    } catch (error) {
       setLoginLoading(false);
       if (kDebugMode) {
         Utils.flushBarErrorMessage(error.toString(), context);
         print(error.toString());
       }
-    });
+    }
   }
 
   Future<void> signUpApi(dynamic data, BuildContext context) async {

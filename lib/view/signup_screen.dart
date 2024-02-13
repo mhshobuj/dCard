@@ -61,11 +61,11 @@ class SignUpScreen extends StatefulWidget {
      ValueNotifier<bool> isVerifiedNotifier = ValueNotifier(false);
 
      return Scaffold(
-         appBar: AppBar(
+         /*appBar: AppBar(
            backgroundColor: AppColors.backgroundColor,
            title: const Text('SignUp'),
            centerTitle: true,
-         ),
+         ),*/
          body: SingleChildScrollView(
            child: SafeArea(
              child: Column(

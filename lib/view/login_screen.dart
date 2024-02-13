@@ -1,10 +1,14 @@
-import 'package:dma_card/res/color.dart';
+
+import 'dart:math';
+
 import 'package:dma_card/res/components/round_button.dart';
 import 'package:dma_card/utils/routes/routes_name.dart';
 import 'package:dma_card/utils/utils.dart';
 import 'package:dma_card/view_model/auth_view_model.dart';
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
+
+import '../view_model/login_view_model.dart';
 
 class LoginScreen extends StatefulWidget {
   const LoginScreen({super.key});
@@ -43,11 +47,11 @@ class _LoginScreenState extends State<LoginScreen> {
 
     final height = MediaQuery.of(context).size.height * 1;
     return Scaffold(
-      appBar: AppBar(
+      /*appBar: AppBar(
         backgroundColor: AppColors.backgroundColor,
         title: const Text('Login'),
         centerTitle: true,
-      ),
+      ),*/
       body: SafeArea(
         child: Column(
           mainAxisAlignment: MainAxisAlignment.center,
@@ -109,7 +113,7 @@ class _LoginScreenState extends State<LoginScreen> {
             RoundButton(
               title: "Login",
               loading: authViewMode.loginLoading,
-              onPress: () {
+              onPress: () async {
                 if (_emailController.text.isEmpty) {
                   Utils.flushBarErrorMessage("The email/phone is required!", context);
                 } else if (_passwordController.text.isEmpty) {
