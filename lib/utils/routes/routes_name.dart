@@ -11,4 +11,13 @@ class RoutesName{
 
   //home routes name
   static const String home = "home_screen";
+
+  //rewards routes name
+  static const String rewards = "rewards_screen";
+
+  //more routes name
+  static const String more = "more_screen";
+
+  //landing routes name
+  static const String landing = "landing_screen";
 }

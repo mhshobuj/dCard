@@ -2,12 +2,12 @@ import 'package:flutter/material.dart';
 import 'package:intl/intl.dart';
 import 'package:provider/provider.dart';
 
-import '../res/color.dart';
-import '../res/components/otp_popup.dart';
-import '../res/components/round_button.dart';
-import '../utils/routes/routes_name.dart';
-import '../utils/utils.dart';
-import '../view_model/auth_view_model.dart';
+import '../../res/color.dart';
+import '../../res/components/otp_popup.dart';
+import '../../res/components/round_button.dart';
+import '../../utils/routes/routes_name.dart';
+import '../../utils/utils.dart';
+import '../../view_model/auth_view_model.dart';
 
 class SignUpScreen extends StatefulWidget {
    const SignUpScreen({super.key});

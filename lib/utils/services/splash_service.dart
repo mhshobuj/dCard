@@ -17,7 +17,7 @@ class SplashServices{
         Navigator.pushNamedAndRemoveUntil(context, RoutesName.login, (route) => false);
       }else{
         await Future.delayed(const Duration(seconds: 3));
-        Navigator.pushNamedAndRemoveUntil(context, RoutesName.home, (route) => false);
+        Navigator.pushNamedAndRemoveUntil(context, RoutesName.landing, (route) => false);
       }
 
     }).onError((error, stackTrace){
