@@ -12,14 +12,12 @@ class SplashServices{
   void checkAuthentication(BuildContext context)async{
     getUserData().then((value)async{
 
-      print(value.token);
-
       if(value.token == "null" || value.token == ''){
         await Future.delayed(const Duration(seconds: 3));
-        Navigator.pushNamed(context, RoutesName.login);
+        Navigator.pushNamedAndRemoveUntil(context, RoutesName.login, (route) => false);
       }else{
         await Future.delayed(const Duration(seconds: 3));
-        Navigator.pushNamed(context, RoutesName.home);
+        Navigator.pushNamedAndRemoveUntil(context, RoutesName.home, (route) => false);
       }
 
     }).onError((error, stackTrace){
