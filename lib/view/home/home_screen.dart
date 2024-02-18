@@ -1,83 +1,45 @@
 import 'package:flutter/material.dart';
+import 'package:provider/provider.dart';
 
-import '../../res/color.dart';
+import '../../model/get_card_model.dart';
+import '../../view_model/home_view_model.dart';
+import '../../view_model/login_view_model.dart';
+import 'card_templete.dart';
 
 class HomeScreen extends StatefulWidget {
-  const HomeScreen({super.key});
+  const HomeScreen({Key? key}) : super(key: key);
 
   @override
   State<HomeScreen> createState() => _HomeScreenState();
 }
 
 class _HomeScreenState extends State<HomeScreen> {
-
   String cardHolderName = "md mehedi hasan";
   String cardNumber = "1234567890123456";
+
+  GetCardModel? getCardResponse; // Store the card response here
+
+  @override
+  void initState() {
+    super.initState();
+    WidgetsBinding.instance!.addPostFrameCallback((_) {
+      // Fetch card info after the widget is built
+      getCardInfo();
+    });
+  }
 
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      /*appBar: AppBar(
-        backgroundColor: AppColors.backgroundColor,
-        centerTitle: true,
-        title: const Text('Home'),
-      ),*/
       body: Column(
         crossAxisAlignment: CrossAxisAlignment.center,
         children: [
           const SizedBox(height: 40),
-          Container(
-            margin: const EdgeInsets.all(5),
-            width: MediaQuery.of(context).size.width - 10, // Adjusted width to account for margins
-            height: MediaQuery.of(context).size.width * 0.6, // Adjust card height as needed
-            decoration: BoxDecoration(
-              borderRadius: BorderRadius.circular(10), // Apply border radius
-              image: const DecorationImage(
-                image: AssetImage('assets/images/card_template.png'),
-                fit: BoxFit.cover,
-              ),
-            ),
-            child: Stack(
-              children: [
-                Positioned(
-                  bottom: 20,
-                  left: 20,
-                  child: Column(
-                    crossAxisAlignment: CrossAxisAlignment.start,
-                    children: [
-                      ShaderMask(
-                        shaderCallback: (Rect bounds) {
-                          return const LinearGradient(
-                            colors: [
-                              Colors.yellowAccent,
-                              Colors.redAccent,
-                              Colors.yellow,
-                            ],
-                          ).createShader(bounds);
-                        },
-                        child: Text(
-                          cardNumber.replaceAllMapped(RegExp(r'.{4}'), (match) => '${match.group(0)} '),
-                          style: const TextStyle(
-                            color: Colors.white,
-                            fontSize: 30,
-                            fontWeight: FontWeight.bold,
-                          ),
-                        ),
-                      ),
-                      const SizedBox(height: 6),
-                      Text(
-                        cardHolderName.toUpperCase(),
-                        style: const TextStyle(
-                          color: Colors.white,
-                          fontSize: 24,
-                          fontWeight: FontWeight.bold,
-                        ),
-                      ),
-                    ],
-                  ),
-                ),
-              ],
-            ),
+          // Display the card template
+          CardTemplate(
+            cardHolderName: cardHolderName,
+            cardNumber: cardNumber,
+            getCardResponse: getCardResponse, // Pass the response here
           ),
           const SizedBox(height: 20),
           Container(
@@ -85,7 +47,7 @@ class _HomeScreenState extends State<HomeScreen> {
               border: Border(
                 bottom: BorderSide(
                   color: Colors.black,
-                  width: 2.0, // Adjust the width as needed
+                  width: 2.0,
                 ),
               ),
             ),
@@ -105,12 +67,12 @@ class _HomeScreenState extends State<HomeScreen> {
           ),
           Expanded(
             child: ListView.builder(
-              itemCount: 10, // Replace with your transaction list length
+              itemCount: 10,
               itemBuilder: (context, index) {
                 return ListTile(
                   title: Text('Transaction $index'),
                   subtitle: const Text('Transaction details'),
-                  trailing: const Text('\$10.00'), // Example transaction amount
+                  trailing: const Text('\$10.00'),
                 );
               },
             ),
@@ -119,5 +81,29 @@ class _HomeScreenState extends State<HomeScreen> {
       ),
     );
   }
+
+  void getCardInfo() {
+    final homeViewModel = Provider.of<HomeViewModel>(context, listen: false);
+    final tokenViewModel = Provider.of<TokenViewModel>(context, listen: false);
+
+    tokenViewModel.getToken().then((loginModel) {
+      final token = loginModel.token;
+      homeViewModel.getCardInfo(token!, context).then((getCardResponse) {
+        // Update the state based on the hasCard value
+        setState(() {
+          this.getCardResponse = getCardResponse;
+        });
+      }).catchError((error) {
+        print(error);
+        // Handle error here
+      });
+    }).catchError((error) {
+      print(error);
+      // Handle error here
+    });
+  }
 }
+
+
+
 

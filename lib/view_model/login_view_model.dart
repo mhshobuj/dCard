@@ -2,7 +2,7 @@ import 'package:dma_card/model/login_model.dart';
 import 'package:flutter/foundation.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 
-class LoginViewModel with ChangeNotifier{
+class TokenViewModel with ChangeNotifier{
 
   Future<bool> saveUser(LoginModel model)async{
     final SharedPreferences sharedPreferences = await SharedPreferences.getInstance();
@@ -11,7 +11,7 @@ class LoginViewModel with ChangeNotifier{
     return true;
   }
 
-  Future<LoginModel> getUser()async{
+  Future<LoginModel> getToken()async{
     final SharedPreferences sharedPreferences = await SharedPreferences.getInstance();
     final String? token = sharedPreferences.getString("TOKEN");
     return LoginModel(

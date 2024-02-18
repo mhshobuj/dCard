@@ -8,7 +8,7 @@ import 'login_view_model.dart';
 
 class AuthViewModel with ChangeNotifier{
   final _myRepo = AuthRepository();
-  final LoginViewModel _loginViewModel = LoginViewModel();
+  final TokenViewModel _loginViewModel = TokenViewModel();
 
   bool _loginLoading = false;
   bool get loginLoading => _loginLoading;

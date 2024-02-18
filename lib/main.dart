@@ -1,6 +1,7 @@
 import 'package:dma_card/utils/routes/routes.dart';
 import 'package:dma_card/utils/routes/routes_name.dart';
 import 'package:dma_card/view_model/auth_view_model.dart';
+import 'package:dma_card/view_model/home_view_model.dart';
 import 'package:dma_card/view_model/login_view_model.dart';
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
@@ -18,7 +19,8 @@ class MyApp extends StatelessWidget {
     return MultiProvider(
       providers: [
         ChangeNotifierProvider(create: (_) => AuthViewModel()),
-        ChangeNotifierProvider(create: (_) => LoginViewModel()),
+        ChangeNotifierProvider(create: (_) => TokenViewModel()),
+        ChangeNotifierProvider(create: (_) => HomeViewModel()),
       ],
       child: MaterialApp(
         debugShowCheckedModeBanner: false,

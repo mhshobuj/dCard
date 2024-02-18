@@ -20,4 +20,7 @@ class RoutesName{
 
   //landing routes name
   static const String landing = "landing_screen";
+
+  //apply routes name
+  static const String apply = "card_apply_screen";
 }

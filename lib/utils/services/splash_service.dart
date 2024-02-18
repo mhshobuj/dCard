@@ -7,7 +7,7 @@ import '../../model/login_model.dart';
 
 class SplashServices{
 
-  Future<LoginModel> getUserData() => LoginViewModel().getUser();
+  Future<LoginModel> getUserData() => TokenViewModel().getToken();
 
   void checkAuthentication(BuildContext context)async{
     getUserData().then((value)async{

@@ -1,4 +1,5 @@
 import 'package:dma_card/utils/routes/routes_name.dart';
+import 'package:dma_card/view/apply/card_apply_screen.dart';
 import 'package:dma_card/view/home/home_screen.dart';
 import 'package:dma_card/view/auth/login_screen.dart';
 import 'package:dma_card/view/auth/signup_screen.dart';
@@ -21,6 +22,8 @@ class Routes {
         return MaterialPageRoute(builder: (BuildContext context) => const MoreScreen());
       case RoutesName.landing:
         return MaterialPageRoute(builder: (BuildContext context) => LandingPage());
+      case RoutesName.apply:
+        return MaterialPageRoute(builder: (BuildContext context) => ApplyCardScreen());
       case RoutesName.login:
         return MaterialPageRoute(builder: (BuildContext context) => const LoginScreen());
       case RoutesName.signUp:
