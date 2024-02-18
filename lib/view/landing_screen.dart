@@ -1,3 +1,4 @@
+import 'package:dma_card/res/color.dart';
 import 'package:dma_card/view/home/home_screen.dart';
 import 'package:dma_card/view/more/more_screen.dart';
 import 'package:dma_card/view/rewards/rewards_screen.dart';
@@ -58,9 +59,9 @@ class _LandingPageState extends State<LandingPage> {
               ),
             ],
             currentIndex: _selectedIndex,
-            selectedItemColor: Colors.blue,
+            selectedItemColor: Colors.white,
             onTap: _onItemTapped,
-            backgroundColor: Colors.white,
+            backgroundColor: AppColors.buttonColor,
           ),
         ),
       ),

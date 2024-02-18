@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 
 import '../../res/color.dart';
 import '../../res/components/round_button.dart';
+import '../../utils/utils.dart';
 
 class ApplyCardScreen extends StatefulWidget {
   const ApplyCardScreen({Key? key}) : super(key: key);
@@ -12,7 +13,24 @@ class ApplyCardScreen extends StatefulWidget {
 
 class _ApplyCardScreenState extends State<ApplyCardScreen> {
 
-  String _selectedPayment = 'Cash';
+  final TextEditingController _cardNameController = TextEditingController();
+  final TextEditingController _addressController = TextEditingController();
+
+  FocusNode cardFocusNode = FocusNode();
+  FocusNode addressFocusNode = FocusNode();
+
+  String _selectedPayment = '';
+  String _pickedLocation = '';
+  String _selectedArea = '';
+
+  @override
+  void dispose() {
+    // TODO: implement dispose
+    super.dispose();
+
+    cardFocusNode.dispose();
+    addressFocusNode.dispose();
+  }
 
   @override
   Widget build(BuildContext context) {
@@ -42,9 +60,15 @@ class _ApplyCardScreenState extends State<ApplyCardScreen> {
                 ),
               ),
               TextFormField(
+                controller: _cardNameController,
+                keyboardType: TextInputType.name,
+                focusNode: cardFocusNode,
                 decoration: InputDecoration(
                   hintText: 'Enter preferred card name',
                 ),
+                onFieldSubmitted: (value) {
+                  Utils.fieldFocusChange(context, cardFocusNode, addressFocusNode);
+                },
               ),
               SizedBox(height: 20),
               Text(
@@ -55,6 +79,9 @@ class _ApplyCardScreenState extends State<ApplyCardScreen> {
                 ),
               ),
               TextFormField(
+                controller: _addressController,
+                keyboardType: TextInputType.streetAddress,
+                focusNode: addressFocusNode,
                 decoration: InputDecoration(
                   hintText: 'Enter your address',
                 ),
@@ -76,6 +103,7 @@ class _ApplyCardScreenState extends State<ApplyCardScreen> {
                     .toList(),
                 onChanged: (String? newValue) {
                   // Handle dropdown value change
+                  _selectedArea = newValue!;
                 },
               ),
               SizedBox(height: 20),
@@ -96,6 +124,7 @@ class _ApplyCardScreenState extends State<ApplyCardScreen> {
                     .toList(),
                 onChanged: (String? newValue) {
                   // Handle dropdown value change
+                  _pickedLocation = newValue!;
                 },
               ),
               SizedBox(height: 20),
@@ -132,7 +161,22 @@ class _ApplyCardScreenState extends State<ApplyCardScreen> {
                 title: "Apply",
                 //loading: authViewMode.loginLoading,
                 onPress: () async {
-
+                  if (_cardNameController.text.isEmpty) {
+                    Utils.flushBarErrorMessage("The preferred card name is required!", context);
+                  } else if (_addressController.text.isEmpty) {
+                    Utils.flushBarErrorMessage("The address is required!", context);
+                  } else if (_selectedArea == '') {
+                    Utils.flushBarErrorMessage(
+                        "Please select your area.", context);
+                  } else if (_pickedLocation == '') {
+                    Utils.flushBarErrorMessage(
+                        "Please select your card pickup location.", context);
+                  } else if (_selectedPayment == '') {
+                    Utils.flushBarErrorMessage(
+                        "Please select your payment method.", context);
+                  } else {
+                    Utils.flushBarErrorMessage("success", context);
+                  }
                 },
               ),
             ],
