@@ -10,7 +10,7 @@ class HomeRepository{
 
   Future<GetCardModel> getCardInfo(String token)async {
     try{
-      dynamic response = await _apiServices.getGetApiResponse(AppUrl.getCardUrl, token);
+      dynamic response = await _apiServices.getGetTokenApiResponse(AppUrl.getCardUrl, token);
       return GetCardModel.fromJson(response);
     }catch(e){
       rethrow;

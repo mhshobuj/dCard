@@ -1,5 +1,7 @@
+import 'package:dma_card/model/get_area_list.dart';
+import 'package:dma_card/view_model/area_list_view_model.dart';
 import 'package:flutter/material.dart';
-
+import 'package:provider/provider.dart';
 import '../../res/color.dart';
 import '../../res/components/round_button.dart';
 import '../../utils/utils.dart';
@@ -22,14 +24,25 @@ class _ApplyCardScreenState extends State<ApplyCardScreen> {
   String _selectedPayment = '';
   String _pickedLocation = '';
   String _selectedArea = '';
+  List<Data> filteredAreas = [];
+
+  GetAreaList? getAreaResponse;
+  Set<String> uniqueAreaNames = Set<String>();
 
   @override
   void dispose() {
-    // TODO: implement dispose
     super.dispose();
 
     cardFocusNode.dispose();
     addressFocusNode.dispose();
+  }
+
+  @override
+  void initState() {
+    super.initState();
+    WidgetsBinding.instance!.addPostFrameCallback((_) {
+      getAreaList();
+    });
   }
 
   @override
@@ -39,12 +52,12 @@ class _ApplyCardScreenState extends State<ApplyCardScreen> {
         title: Text(
           'Apply for Card',
           style: TextStyle(
-            color: Colors.white, // Text color
+            color: Colors.white,
             fontWeight: FontWeight.bold,
           ),
         ),
-        centerTitle: true, // Center the title
-        backgroundColor: AppColors.buttonColor, // Set background color
+        centerTitle: true,
+        backgroundColor: AppColors.buttonColor,
       ),
       body: SingleChildScrollView(
         child: Padding(
@@ -88,27 +101,29 @@ class _ApplyCardScreenState extends State<ApplyCardScreen> {
               ),
               SizedBox(height: 20),
               Text(
-                'Choice your area',
+                'Select your area',
                 style: TextStyle(
                   fontSize: 18,
                   fontWeight: FontWeight.bold,
                 ),
               ),
               DropdownButtonFormField<String>(
-                items: ['Dhanmondi', 'Gulshan-2', 'Uttara']
-                    .map((String value) => DropdownMenuItem<String>(
-                  value: value,
-                  child: Text(value),
-                ))
-                    .toList(),
+                value: _selectedArea,
+                items: uniqueAreaNames.map((name) {
+                  return DropdownMenuItem<String>(
+                    value: name,
+                    child: Text(name),
+                  );
+                }).toList(),
                 onChanged: (String? newValue) {
-                  // Handle dropdown value change
-                  _selectedArea = newValue!;
+                  setState(() {
+                    _selectedArea = newValue!;
+                  });
                 },
               ),
               SizedBox(height: 20),
               Text(
-                'Choice card pickup outlet',
+                'Select card pickup outlet',
                 style: TextStyle(
                   fontSize: 18,
                   fontWeight: FontWeight.bold,
@@ -116,15 +131,16 @@ class _ApplyCardScreenState extends State<ApplyCardScreen> {
               ),
               DropdownButtonFormField<String>(
                 items: ['Crimson Cup Banani 11', 'Crimson Cup Bashundhara', 'Crimson Cup Dhanmondi 2', 'Crimson Cup Dhanmondi 27',
-                   'Crimson Cup Gulshan 1', 'Crimson Cup Mirpur 1', 'Crimson Cup Mirpur 12', 'Crimson Cup Uttara-13']
+                  'Crimson Cup Gulshan 1', 'Crimson Cup Mirpur 1', 'Crimson Cup Mirpur 12', 'Crimson Cup Uttara-13']
                     .map((String value) => DropdownMenuItem<String>(
                   value: value,
                   child: Text(value),
                 ))
                     .toList(),
                 onChanged: (String? newValue) {
-                  // Handle dropdown value change
-                  _pickedLocation = newValue!;
+                  setState(() {
+                    _pickedLocation = newValue!;
+                  });
                 },
               ),
               SizedBox(height: 20),
@@ -155,25 +171,21 @@ class _ApplyCardScreenState extends State<ApplyCardScreen> {
                   const Text("Online"),
                 ],
               ),
-              const SizedBox(height: 15.0), // Adjust spacing as needed
+              const SizedBox(height: 15.0),
               SizedBox(height: 20),
               RoundButton(
                 title: "Apply",
-                //loading: authViewMode.loginLoading,
                 onPress: () async {
                   if (_cardNameController.text.isEmpty) {
                     Utils.flushBarErrorMessage("The preferred card name is required!", context);
                   } else if (_addressController.text.isEmpty) {
                     Utils.flushBarErrorMessage("The address is required!", context);
-                  } else if (_selectedArea == '') {
-                    Utils.flushBarErrorMessage(
-                        "Please select your area.", context);
-                  } else if (_pickedLocation == '') {
-                    Utils.flushBarErrorMessage(
-                        "Please select your card pickup location.", context);
-                  } else if (_selectedPayment == '') {
-                    Utils.flushBarErrorMessage(
-                        "Please select your payment method.", context);
+                  } else if (_selectedArea.isEmpty) {
+                    Utils.flushBarErrorMessage("Please select your area.", context);
+                  } else if (_pickedLocation.isEmpty) {
+                    Utils.flushBarErrorMessage("Please select your card pickup location.", context);
+                  } else if (_selectedPayment.isEmpty) {
+                    Utils.flushBarErrorMessage("Please select your payment method.", context);
                   } else {
                     Utils.flushBarErrorMessage("success", context);
                   }
@@ -185,4 +197,21 @@ class _ApplyCardScreenState extends State<ApplyCardScreen> {
       ),
     );
   }
+
+  void getAreaList() {
+    final areaViewModel = Provider.of<AreaViewModel>(context, listen: false);
+
+    areaViewModel.getAreaList(context).then((response) {
+      setState(() {
+        getAreaResponse = response;
+        uniqueAreaNames = response.data?.map((areaData) => areaData.name!).toSet() ?? {};
+        filteredAreas = response.data ?? [];
+        _selectedArea = uniqueAreaNames.isNotEmpty ? uniqueAreaNames.first : '';
+      });
+    }).catchError((error) {
+      print(error);
+    });
+  }
+
 }
+

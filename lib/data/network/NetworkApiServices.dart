@@ -7,12 +7,27 @@ import 'package:http/http.dart';
 
 class NetworkApiServices extends BaseApiServices {
   @override
-  Future getGetApiResponse(String url, String token) async {
+  Future getGetTokenApiResponse(String url, String token) async {
     dynamic responseJson;
 
     try {
       final response =
           await http.get(Uri.parse(url), headers: {'Authorization': 'Bearer $token'}).timeout(const Duration(seconds: 10));
+      responseJson = returnResponse(response);
+    } on SocketException {
+      throw FetchDataException("No Internet Connection");
+    }
+
+    return responseJson;
+  }
+
+  @override
+  Future getGetApiResponse(String url) async {
+    dynamic responseJson;
+
+    try {
+      final response =
+      await http.get(Uri.parse(url)).timeout(const Duration(seconds: 10));
       responseJson = returnResponse(response);
     } on SocketException {
       throw FetchDataException("No Internet Connection");
