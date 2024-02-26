@@ -51,6 +51,21 @@ class NetworkApiServices extends BaseApiServices {
     return responseJson;
   }
 
+  @override
+  Future getPostTokenApiResponse(String url, String token, dynamic data) async {
+    dynamic responseJson;
+
+    try {
+      Response response = await post(Uri.parse(url), headers: {'Authorization': 'Bearer $token'}, body: data)
+          .timeout(const Duration(seconds: 10));
+      responseJson = returnResponse(response);
+    } on SocketException {
+      throw FetchDataException("No Internet Connection");
+    }
+
+    return responseJson;
+  }
+
   dynamic returnResponse(http.Response response) {
     switch (response.statusCode) {
       case 200:

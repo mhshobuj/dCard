@@ -1,8 +1,7 @@
 import 'package:dma_card/model/get_card_model.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/foundation.dart';
-
-import '../respository/home_repository.dart';
+import '../repository/home_repository.dart';
 import '../utils/utils.dart';
 
 class HomeViewModel with ChangeNotifier {

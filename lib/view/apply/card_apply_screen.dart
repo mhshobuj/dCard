@@ -4,7 +4,9 @@ import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
 import '../../res/color.dart';
 import '../../res/components/round_button.dart';
+import '../../utils/routes/routes_name.dart';
 import '../../utils/utils.dart';
+import '../../view_model/login_view_model.dart';
 
 class ApplyCardScreen extends StatefulWidget {
   const ApplyCardScreen({Key? key}) : super(key: key);
@@ -21,7 +23,7 @@ class _ApplyCardScreenState extends State<ApplyCardScreen> {
   FocusNode cardFocusNode = FocusNode();
   FocusNode addressFocusNode = FocusNode();
 
-  String _selectedPayment = '';
+  String _selectedPayment = 'cash';
   String _pickedLocation = '';
   String _selectedArea = '';
   List<Data> filteredAreas = [];
@@ -40,13 +42,18 @@ class _ApplyCardScreenState extends State<ApplyCardScreen> {
   @override
   void initState() {
     super.initState();
-    WidgetsBinding.instance!.addPostFrameCallback((_) {
+    WidgetsBinding.instance.addPostFrameCallback((_) {
+      // Fetch card info after the widget is built
       getAreaList();
     });
   }
 
+
+
   @override
   Widget build(BuildContext context) {
+    final areaViewModel = Provider.of<AreaViewModel>(context, listen: false);
+    final tokenViewModel = Provider.of<TokenViewModel>(context, listen: false);
     return Scaffold(
       appBar: AppBar(
         title: Text(
@@ -153,28 +160,18 @@ class _ApplyCardScreenState extends State<ApplyCardScreen> {
                     groupValue: _selectedPayment,
                     onChanged: (value) {
                       setState(() {
-                        _selectedPayment = value!;
+                        _selectedPayment = value as String;
                       });
                     },
                   ),
                   const Text("Cash"),
-                  const SizedBox(width: 10),
-                  Radio(
-                    value: 'online',
-                    groupValue: _selectedPayment,
-                    onChanged: (value) {
-                      setState(() {
-                        _selectedPayment = value!;
-                      });
-                    },
-                  ),
-                  const Text("Online"),
                 ],
               ),
               const SizedBox(height: 15.0),
               SizedBox(height: 20),
               RoundButton(
                 title: "Apply",
+                loading: areaViewModel.getUpdateLoading,
                 onPress: () async {
                   if (_cardNameController.text.isEmpty) {
                     Utils.flushBarErrorMessage("The preferred card name is required!", context);
@@ -187,7 +184,36 @@ class _ApplyCardScreenState extends State<ApplyCardScreen> {
                   } else if (_selectedPayment.isEmpty) {
                     Utils.flushBarErrorMessage("Please select your payment method.", context);
                   } else {
-                    Utils.flushBarErrorMessage("success", context);
+                    final Map<String, String> data = {
+                      'address_line_1': _addressController.text.toString(),
+                      'upazila': _selectedArea,
+                      'city': 'Dhaka',
+                      'state': 'BD',
+                      'post_code': '1205'
+                    };
+                    tokenViewModel.getToken().then((loginModel) {
+                      final token = loginModel.token;
+                      areaViewModel.updateAddress(context, token!, data).then((updateAddressResponse) {
+                        // Update the state based on the hasCard value
+                        if(updateAddressResponse.statusCode == 200){
+                          final Map<String, String> data = {
+                            'service_id': '1',
+                            'service_type': 'RPS',
+                            'service_merchant': '1',
+                            'platform': 'Android',
+                            'delivery_method': 'Home',
+                            'card_name': _cardNameController.text.toString()
+                          };
+                          applyCard(tokenViewModel, areaViewModel, data);
+                        }
+                      }).catchError((error) {
+                        print(error);
+                        // Handle error here
+                      });
+                    }).catchError((error) {
+                      print(error);
+                      // Handle error here
+                    });
                   }
                 },
               ),
@@ -200,7 +226,6 @@ class _ApplyCardScreenState extends State<ApplyCardScreen> {
 
   void getAreaList() {
     final areaViewModel = Provider.of<AreaViewModel>(context, listen: false);
-
     areaViewModel.getAreaList(context).then((response) {
       setState(() {
         getAreaResponse = response;
@@ -213,5 +238,22 @@ class _ApplyCardScreenState extends State<ApplyCardScreen> {
     });
   }
 
+  void applyCard(TokenViewModel tokenViewModel, AreaViewModel areaViewModel, Map<String, String> data) {
+    tokenViewModel.getToken().then((loginModel) {
+      final token = loginModel.token;
+      areaViewModel.applyCard(context, token!, data).then((applyCardResponse){
+        if(applyCardResponse.statusCode == 200){
+          Utils.flushBarErrorMessage("Apply Successfully", context);
+          Navigator.pushNamedAndRemoveUntil(context, RoutesName.landing, (route) => false);
+        }
+      }).catchError((error) {
+        print(error);
+        // Handle error here
+      });
+    }).catchError((error) {
+      print(error);
+      // Handle error here
+    });
+  }
 }
 
