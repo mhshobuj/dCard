@@ -1,3 +1,5 @@
+import 'package:dma_card/model/base_response.dart';
+import 'package:dma_card/model/check_card_model.dart';
 import 'package:dma_card/model/get_card_model.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/foundation.dart';
@@ -20,11 +22,10 @@ class HomeViewModel with ChangeNotifier {
     try {
       final GetCardModel cardResponse = await _myRepo.getCardInfo(token);
 
-      print(cardResponse.message);
-
       setCardLoading(false);
       if (kDebugMode) {
         print(cardResponse.toJson());
+        print(cardResponse.message);
       }
 
       return cardResponse; // Return the cardResponse
@@ -35,7 +36,47 @@ class HomeViewModel with ChangeNotifier {
         print(error.toString());
       }
       // Handle the error and return null or throw it again
-      throw error;
+      rethrow;
+    }
+  }
+
+  Future<CheckCardResponse> checkCard(String token, String query, BuildContext context) async {
+    try {
+      final CheckCardResponse checkCardResponse = await _myRepo.checkCard(token, query);
+
+      if (kDebugMode) {
+        print(checkCardResponse.toJson());
+        print(checkCardResponse.message);
+      }
+
+      return checkCardResponse; // Return the cardResponse
+    } catch (error) {
+      if (kDebugMode) {
+        Utils.flushBarErrorMessage(error.toString(), context);
+        print(error.toString());
+      }
+      // Handle the error and return null or throw it again
+      rethrow;
+    }
+  }
+
+  Future<BaseResponse> getActiveOtp(String token, String path, BuildContext context) async {
+    try {
+      final BaseResponse getActiveOtpResponse = await _myRepo.getActiveOtp(token, path);
+
+      if (kDebugMode) {
+        print(getActiveOtpResponse.toJson());
+        print(getActiveOtpResponse.message);
+      }
+
+      return getActiveOtpResponse; // Return the cardResponse
+    } catch (error) {
+      if (kDebugMode) {
+        Utils.flushBarErrorMessage(error.toString(), context);
+        print(error.toString());
+      }
+      // Handle the error and return null or throw it again
+      rethrow;
     }
   }
 }

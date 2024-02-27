@@ -22,6 +22,39 @@ class NetworkApiServices extends BaseApiServices {
   }
 
   @override
+  Future<dynamic> getGetTokenApiResponseWithPath(String url, String token, String path) async {
+    dynamic responseJson;
+
+    try {
+      // Construct the URL with the provided path
+      final uri = Uri.parse('$url/$path');
+      final response = await http.get(uri, headers: {'Authorization': 'Bearer $token'}).timeout(const Duration(seconds: 10));
+      responseJson = returnResponse(response);
+    } on SocketException {
+      throw FetchDataException("No Internet Connection");
+    }
+
+    return responseJson;
+  }
+
+
+  @override
+  Future<dynamic> getGetTokenApiResponseWithQuery(String url, String token, String query) async {
+    dynamic responseJson;
+
+    try {
+      // Construct the URL with query parameters
+      final uri = Uri.parse(url).replace(queryParameters: {'card_number': query});
+      final response = await http.get(uri, headers: {'Authorization': 'Bearer $token'}).timeout(const Duration(seconds: 10));
+      responseJson = returnResponse(response);
+    } on SocketException {
+      throw FetchDataException("No Internet Connection");
+    }
+
+    return responseJson;
+  }
+
+  @override
   Future getGetApiResponse(String url) async {
     dynamic responseJson;
 

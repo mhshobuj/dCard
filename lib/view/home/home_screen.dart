@@ -37,8 +37,6 @@ class _HomeScreenState extends State<HomeScreen> {
           const SizedBox(height: 40),
           // Display the card template
           CardTemplate(
-            cardHolderName: cardHolderName,
-            cardNumber: cardNumber,
             getCardResponse: getCardResponse, // Pass the response here
           ),
           const SizedBox(height: 20),

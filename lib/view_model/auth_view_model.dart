@@ -41,7 +41,7 @@ class AuthViewModel with ChangeNotifier{
 
       setLoginLoading(false);
       Utils.flushBarErrorMessage("LogIn Successfully", context);
-      Navigator.pushNamedAndRemoveUntil(context, RoutesName.home, (route) => false);
+      Navigator.pushNamedAndRemoveUntil(context, RoutesName.landing, (route) => false);
       if (kDebugMode) {
         print(loginResponse.toJson());
       }
