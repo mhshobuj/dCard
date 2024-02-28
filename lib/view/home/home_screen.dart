@@ -1,3 +1,4 @@
+import 'package:dma_card/res/color.dart';
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
 
@@ -14,10 +15,8 @@ class HomeScreen extends StatefulWidget {
 }
 
 class _HomeScreenState extends State<HomeScreen> {
-  String cardHolderName = "md mehedi hasan";
-  String cardNumber = "1234567890123456";
-
   GetCardModel? getCardResponse; // Store the card response here
+  bool isLoading = true; // Track loading state
 
   @override
   void initState() {
@@ -31,52 +30,75 @@ class _HomeScreenState extends State<HomeScreen> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      body: Column(
-        crossAxisAlignment: CrossAxisAlignment.center,
-        children: [
-          const SizedBox(height: 40),
-          // Display the card template
-          CardTemplate(
-            getCardResponse: getCardResponse, // Pass the response here
-          ),
-          const SizedBox(height: 20),
-          Container(
-            decoration: const BoxDecoration(
-              border: Border(
-                bottom: BorderSide(
-                  color: Colors.black,
-                  width: 2.0,
+      body: isLoading // Show loading indicator if data is being fetched
+          ? Center(
+              child: Theme(
+                data: ThemeData(
+                  colorScheme: const ColorScheme(
+                  primary: AppColors.buttonColor,
+                  primaryVariant: AppColors.buttonColor,
+                  secondary: AppColors.buttonColor,
+                  secondaryVariant: AppColors.buttonColor,
+                  surface: AppColors.buttonColor,
+                  background: AppColors.buttonColor,
+                  error: AppColors.buttonColor,
+                  onPrimary: AppColors.buttonColor,
+                  onSecondary: AppColors.buttonColor,
+                  onSurface: AppColors.buttonColor,
+                  onBackground: AppColors.buttonColor,
+                  onError: AppColors.buttonColor,
+                  brightness: Brightness.light,
                 ),
+                ),
+                child: const CircularProgressIndicator(),
               ),
-            ),
-            child: const Align(
-              alignment: Alignment.centerLeft,
-              child: Padding(
-                padding: EdgeInsets.symmetric(horizontal: 8.0),
-                child: Text(
-                  'Transactions list (last 7 days)',
-                  style: TextStyle(
-                    fontWeight: FontWeight.bold,
-                    fontSize: 18,
+            )
+          : Column(
+              crossAxisAlignment: CrossAxisAlignment.center,
+              children: [
+                const SizedBox(height: 40),
+                // Display the card template
+                CardTemplate(
+                  getCardResponse: getCardResponse, // Pass the response here
+                ),
+                const SizedBox(height: 20),
+                Container(
+                  decoration: const BoxDecoration(
+                    border: Border(
+                      bottom: BorderSide(
+                        color: Colors.black,
+                        width: 2.0,
+                      ),
+                    ),
+                  ),
+                  child: const Align(
+                    alignment: Alignment.centerLeft,
+                    child: Padding(
+                      padding: EdgeInsets.symmetric(horizontal: 8.0),
+                      child: Text(
+                        'Transactions list (last 7 days)',
+                        style: TextStyle(
+                          fontWeight: FontWeight.bold,
+                          fontSize: 18,
+                        ),
+                      ),
+                    ),
                   ),
                 ),
-              ),
+                Expanded(
+                  child: ListView.builder(
+                    itemCount: 10,
+                    itemBuilder: (context, index) {
+                      return ListTile(
+                        title: Text('Transaction $index'),
+                        subtitle: const Text('Transaction details'),
+                        trailing: const Text('\$10.00'),
+                      );
+                    },
+                  ),
+                ),
+              ],
             ),
-          ),
-          Expanded(
-            child: ListView.builder(
-              itemCount: 10,
-              itemBuilder: (context, index) {
-                return ListTile(
-                  title: Text('Transaction $index'),
-                  subtitle: const Text('Transaction details'),
-                  trailing: const Text('\$10.00'),
-                );
-              },
-            ),
-          ),
-        ],
-      ),
     );
   }
 
@@ -90,6 +112,7 @@ class _HomeScreenState extends State<HomeScreen> {
         // Update the state based on the hasCard value
         setState(() {
           this.getCardResponse = getCardResponse;
+          isLoading = false; // Update loading state when data is received
         });
       }).catchError((error) {
         print(error);
@@ -101,7 +124,3 @@ class _HomeScreenState extends State<HomeScreen> {
     });
   }
 }
-
-
-
-
