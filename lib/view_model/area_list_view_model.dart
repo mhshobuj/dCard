@@ -41,8 +41,7 @@ class AreaViewModel with ChangeNotifier {
     }
   }
 
-  Future<BaseResponse> updateAddress(
-      BuildContext context, String token, dynamic data) async {
+  Future<BaseResponse> updateAddress(BuildContext context, String token, dynamic data) async {
     setUpdateLoading(true);
     try {
       final BaseResponse updateResponse =

@@ -36,4 +36,13 @@ class HomeRepository{
       rethrow;
     }
   }
+
+  Future<BaseResponse> cardActive(String token, dynamic data)async {
+    try{
+      dynamic response = await _apiServices.getPostTokenApiResponse(AppUrl.cardActive, token, data);
+      return BaseResponse.fromJson(response);
+    }catch(e){
+      rethrow;
+    }
+  }
 }

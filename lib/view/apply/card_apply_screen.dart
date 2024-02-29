@@ -56,7 +56,7 @@ class _ApplyCardScreenState extends State<ApplyCardScreen> {
     final tokenViewModel = Provider.of<TokenViewModel>(context, listen: false);
     return Scaffold(
       appBar: AppBar(
-        title: Text(
+        title: const Text(
           'Apply for Card',
           style: TextStyle(
             color: Colors.white,
@@ -72,7 +72,7 @@ class _ApplyCardScreenState extends State<ApplyCardScreen> {
           child: Column(
             crossAxisAlignment: CrossAxisAlignment.stretch,
             children: [
-              Text(
+              const Text(
                 'Preferred Card Name',
                 style: TextStyle(
                   fontSize: 18,
@@ -83,15 +83,15 @@ class _ApplyCardScreenState extends State<ApplyCardScreen> {
                 controller: _cardNameController,
                 keyboardType: TextInputType.name,
                 focusNode: cardFocusNode,
-                decoration: InputDecoration(
+                decoration: const InputDecoration(
                   hintText: 'Enter preferred card name',
                 ),
                 onFieldSubmitted: (value) {
                   Utils.fieldFocusChange(context, cardFocusNode, addressFocusNode);
                 },
               ),
-              SizedBox(height: 20),
-              Text(
+              const SizedBox(height: 20),
+              const Text(
                 'Address',
                 style: TextStyle(
                   fontSize: 18,
@@ -102,12 +102,12 @@ class _ApplyCardScreenState extends State<ApplyCardScreen> {
                 controller: _addressController,
                 keyboardType: TextInputType.streetAddress,
                 focusNode: addressFocusNode,
-                decoration: InputDecoration(
+                decoration: const InputDecoration(
                   hintText: 'Enter your address',
                 ),
               ),
-              SizedBox(height: 20),
-              Text(
+              const SizedBox(height: 20),
+              const Text(
                 'Select your area',
                 style: TextStyle(
                   fontSize: 18,
@@ -128,8 +128,8 @@ class _ApplyCardScreenState extends State<ApplyCardScreen> {
                   });
                 },
               ),
-              SizedBox(height: 20),
-              Text(
+              const SizedBox(height: 20),
+              const Text(
                 'Select card pickup outlet',
                 style: TextStyle(
                   fontSize: 18,
@@ -150,7 +150,7 @@ class _ApplyCardScreenState extends State<ApplyCardScreen> {
                   });
                 },
               ),
-              SizedBox(height: 20),
+              const SizedBox(height: 20),
               Row(
                 children: [
                   const Text("Select Payment Method:"),
@@ -168,7 +168,7 @@ class _ApplyCardScreenState extends State<ApplyCardScreen> {
                 ],
               ),
               const SizedBox(height: 15.0),
-              SizedBox(height: 20),
+              const SizedBox(height: 20),
               RoundButton(
                 title: "Apply",
                 loading: areaViewModel.getUpdateLoading,

@@ -220,7 +220,9 @@ class CardTemplate extends StatelessWidget {
       homeViewModel.checkCard(token!, value, context).then((checkCardResponse) {
         if(checkCardResponse.statusCode == 200){
           sendActiveOtp(context, homeViewModel, tokenViewModel, checkCardResponse.data?.cardSku, isVerifiedNotifier);
-          print(checkCardResponse.data?.cardSku);
+          if (kDebugMode) {
+            print(checkCardResponse.data?.cardSku);
+          }
         }
       }).catchError((error) {
         if (kDebugMode) {
@@ -248,12 +250,42 @@ class CardTemplate extends StatelessWidget {
               isVerified: isVerifiedNotifier, // Pass isVerifiedNotifier
               onSubmit: (otp) async {
                 //Utils.flushBarErrorMessage("Active $otp", context);
-                print('active $otp');
+                if (kDebugMode) {
+                  print('active $otp');
+                }
+                activeCard(context, tokenViewModel, homeViewModel, cardSku, otp);
               },
             ),
           );
-          print(getActiveOtpResponse.message);
+        }
+      }).catchError((error) {
+        if (kDebugMode) {
+          print(error);
+        }
+        // Handle error here
+      });
+    }).catchError((error) {
+      if (kDebugMode) {
+        print(error);
+      }
+      // Handle error here
+    });
+  }
 
+  void activeCard(BuildContext context,TokenViewModel tokenViewModel, HomeViewModel homeViewModel, String cardSku, String otp) {
+
+    final Map<String, String> data = {
+      'otp': otp,
+      'sku_number': cardSku.toString(),
+    };
+
+    tokenViewModel.getToken().then((loginModel) {
+      final token = loginModel.token;
+      homeViewModel.activeCard(context, token!,data ).then((activeCardResponse) {
+        if(activeCardResponse.statusCode == 200){
+          if (kDebugMode) {
+            print(activeCardResponse.message);
+          }
         }
       }).catchError((error) {
         if (kDebugMode) {

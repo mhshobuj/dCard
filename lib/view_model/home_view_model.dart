@@ -79,4 +79,24 @@ class HomeViewModel with ChangeNotifier {
       rethrow;
     }
   }
+
+  Future<BaseResponse> activeCard(BuildContext context, String token, dynamic data) async {
+    try {
+      final BaseResponse activeCardResponse = await _myRepo.cardActive(token, data);
+
+      print(activeCardResponse.message);
+      if (kDebugMode) {
+        print(activeCardResponse.toJson());
+      }
+
+      return activeCardResponse; // Return the cardResponse
+    } catch (error) {
+      if (kDebugMode) {
+        Utils.flushBarErrorMessage(error.toString(), context);
+        print(error.toString());
+      }
+      // Handle the error and return null or throw it again
+      rethrow;
+    }
+  }
 }
