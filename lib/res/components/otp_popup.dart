@@ -1,5 +1,7 @@
 import 'package:flutter/material.dart';
 
+import '../color.dart';
+
 class OtpPopup extends StatefulWidget {
   final ValueNotifier<bool> isVerified; // Pass isVerifiedNotifier for verification feedback
   final Function(String) onSubmit; // Callback function for OTP submission
@@ -34,7 +36,7 @@ class _OtpPopupState extends State<OtpPopup> {
       title: const Text('Enter OTP'),
       contentPadding: const EdgeInsets.symmetric(horizontal: 24.0, vertical: 20.0),
       content: SizedBox(
-        width: double.infinity,
+        width: MediaQuery.of(context).size.width * 0.8, // Adjust the width as needed
         child: Column(
           mainAxisSize: MainAxisSize.min,
           children: [
@@ -44,12 +46,12 @@ class _OtpPopupState extends State<OtpPopup> {
               children: [
                 for (int i = 0; i < 6; i++)
                   SizedBox(
-                    width: 45.0,
+                    width: MediaQuery.of(context).size.width * 0.1, // Adjust the width as needed
                     height: 60.0,
                     child: _OtpBox(
                       index: i,
                       controller: _otpControllers[i],
-                      focusNode: i == 0 ? FocusNode() : null, // Set focus only for first box
+                      focusNode: i == 0 ? FocusNode() : null, // Set focus only for the first box
                     ),
                   ),
               ],
@@ -70,6 +72,7 @@ class _OtpPopupState extends State<OtpPopup> {
                 });
               },
               style: ElevatedButton.styleFrom(
+                primary: AppColors.buttonColor, // Set the background color
                 padding: const EdgeInsets.symmetric(vertical: 12.0),
                 minimumSize: const Size(120.0, 48.0),
               ),
@@ -81,6 +84,7 @@ class _OtpPopupState extends State<OtpPopup> {
     );
   }
 }
+
 
 class _OtpBox extends StatelessWidget {
   final int index;
