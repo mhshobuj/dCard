@@ -84,8 +84,8 @@ class HomeViewModel with ChangeNotifier {
     try {
       final BaseResponse activeCardResponse = await _myRepo.cardActive(token, data);
 
-      print(activeCardResponse.message);
       if (kDebugMode) {
+        print(activeCardResponse.message);
         print(activeCardResponse.toJson());
       }
 

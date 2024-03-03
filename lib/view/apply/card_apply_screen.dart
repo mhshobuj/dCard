@@ -1,5 +1,6 @@
 import 'package:dma_card/model/get_area_list.dart';
 import 'package:dma_card/view_model/area_list_view_model.dart';
+import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
 import '../../res/color.dart';
@@ -29,7 +30,7 @@ class _ApplyCardScreenState extends State<ApplyCardScreen> {
   List<Data> filteredAreas = [];
 
   GetAreaList? getAreaResponse;
-  Set<String> uniqueAreaNames = Set<String>();
+  Set<String> uniqueAreaNames = <String>{};
 
   @override
   void dispose() {
@@ -202,16 +203,21 @@ class _ApplyCardScreenState extends State<ApplyCardScreen> {
                             'service_merchant': '1',
                             'platform': 'Android',
                             'delivery_method': 'Home',
-                            'card_name': _cardNameController.text.toString()
+                            'card_name': _cardNameController.text.toString(),
+                            'card_pickup_point': _pickedLocation,
                           };
                           applyCard(tokenViewModel, areaViewModel, data);
                         }
                       }).catchError((error) {
-                        print(error);
+                        if (kDebugMode) {
+                          print(error);
+                        }
                         // Handle error here
                       });
                     }).catchError((error) {
-                      print(error);
+                      if (kDebugMode) {
+                        print(error);
+                      }
                       // Handle error here
                     });
                   }
@@ -234,7 +240,9 @@ class _ApplyCardScreenState extends State<ApplyCardScreen> {
         _selectedArea = uniqueAreaNames.isNotEmpty ? uniqueAreaNames.first : '';
       });
     }).catchError((error) {
-      print(error);
+      if (kDebugMode) {
+        print(error);
+      }
     });
   }
 
@@ -247,11 +255,15 @@ class _ApplyCardScreenState extends State<ApplyCardScreen> {
           Navigator.pushNamedAndRemoveUntil(context, RoutesName.landing, (route) => false);
         }
       }).catchError((error) {
-        print(error);
+        if (kDebugMode) {
+          print(error);
+        }
         // Handle error here
       });
     }).catchError((error) {
-      print(error);
+      if (kDebugMode) {
+        print(error);
+      }
       // Handle error here
     });
   }

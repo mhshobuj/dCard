@@ -215,28 +215,36 @@ class CardTemplate extends StatelessWidget {
     final homeViewModel = Provider.of<HomeViewModel>(context, listen: false);
     final tokenViewModel = Provider.of<TokenViewModel>(context, listen: false);
 
+    // Show loading indicator
+    isVerifiedNotifier.value = true;
+
     tokenViewModel.getToken().then((loginModel) {
       final token = loginModel.token;
       homeViewModel.checkCard(token!, value, context).then((checkCardResponse) {
-        if(checkCardResponse.statusCode == 200){
+        if (checkCardResponse.statusCode == 200) {
           sendActiveOtp(context, homeViewModel, tokenViewModel, checkCardResponse.data?.cardSku, isVerifiedNotifier);
           if (kDebugMode) {
             print(checkCardResponse.data?.cardSku);
           }
         }
+        // Hide loading indicator
+        isVerifiedNotifier.value = false;
       }).catchError((error) {
         if (kDebugMode) {
           print(error);
         }
+        // Hide loading indicator
+        isVerifiedNotifier.value = false;
         // Handle error here
       });
     }).catchError((error) {
       if (kDebugMode) {
         print(error);
       }
+      // Hide loading indicator
+      isVerifiedNotifier.value = false;
       // Handle error here
     });
-
   }
 
   void sendActiveOtp(BuildContext context, HomeViewModel homeViewModel, TokenViewModel tokenViewModel, String? cardSku, ValueNotifier<bool> isVerifiedNotifier) {
