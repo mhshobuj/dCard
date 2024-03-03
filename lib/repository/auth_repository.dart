@@ -3,6 +3,8 @@ import 'package:dma_card/data/network/NetworkApiServices.dart';
 import 'package:dma_card/model/login_model.dart';
 import 'package:dma_card/res/app_url.dart';
 
+import '../model/base_response.dart';
+
 class AuthRepository{
 
   BaseApiServices _apiServices = NetworkApiServices();
@@ -16,10 +18,10 @@ class AuthRepository{
     }
   }
 
-  Future<dynamic> signUpApi(dynamic data)async {
+  Future<BaseResponse> signUpApi(dynamic data)async {
     try{
       dynamic response = await _apiServices.getPostApiResponse(AppUrl.registrationUrl, data);
-      return response;
+      return BaseResponse.fromJson(response);
     }catch(e){
       rethrow;
     }

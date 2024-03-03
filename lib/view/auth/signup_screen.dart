@@ -1,3 +1,4 @@
+import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
 import 'package:intl/intl.dart';
 import 'package:provider/provider.dart';
@@ -8,6 +9,7 @@ import '../../res/components/round_button.dart';
 import '../../utils/routes/routes_name.dart';
 import '../../utils/utils.dart';
 import '../../view_model/auth_view_model.dart';
+import '../apply/card_apply_screen.dart';
 
 class SignUpScreen extends StatefulWidget {
   const SignUpScreen({super.key});
@@ -18,6 +20,7 @@ class SignUpScreen extends StatefulWidget {
 
 class _SignUpScreenState extends State<SignUpScreen> {
   final ValueNotifier<bool> _obsecurePassword = ValueNotifier(true);
+  final ValueNotifier<bool> _isSignUpSuccess = ValueNotifier(false);
 
   final TextEditingController _firstNameController = TextEditingController();
   final TextEditingController _lastNameController = TextEditingController();
@@ -287,7 +290,7 @@ class _SignUpScreenState extends State<SignUpScreen> {
               ),
               const SizedBox(height: 20),
               RoundButton(
-                title: "SignUp",
+                title: "Next",
                 loading: authViewMode.otpSendLoading,
                 onPress: () async {
                   if (_firstNameController.text.isEmpty) {
@@ -312,9 +315,7 @@ class _SignUpScreenState extends State<SignUpScreen> {
                     Utils.flushBarErrorMessage(
                         "Please agree with the terms and conditions", context);
                   } else {
-
                     await sendOtp(context, authViewMode);
-
                     showDialog(
                       context: context,
                       builder: (context) => OtpPopup(
@@ -329,11 +330,20 @@ class _SignUpScreenState extends State<SignUpScreen> {
                             'last_name': _lastNameController.text.toString(),
                             'usr_email': _emailController.text.toString(),
                             'phone': _phoneController.text.toString(),
+                            'gender': _selectedGender,
                             'password': _passwordController.text.toString(),
                             'otp': otp,
                             'birth_date': formattedDate,
                           };
-                          authViewMode.signUpApi(data, context);
+                          authViewMode.signUpApi(data, context).then((signUpResponse) async {
+                            if(signUpResponse.statusCode == 200){
+                              await logIn(context, authViewMode, _phoneController.text.toString(), _passwordController.text.toString()); // Perform sign-up operation
+                            }
+                          }).catchError((error) {
+                            if (kDebugMode) {
+                              print(error);
+                            }
+                          });
                         },
                       ),
                     );
@@ -345,7 +355,7 @@ class _SignUpScreenState extends State<SignUpScreen> {
                   onTap: () {
                     Navigator.pushNamed(context, RoutesName.login);
                   },
-                  child: const Text("Already have an account? Login")),
+                  child: const Text("Already have a card? Login")),
               const SizedBox(height: 20),
             ],
           ),
@@ -359,5 +369,21 @@ class _SignUpScreenState extends State<SignUpScreen> {
       'phone': _phoneController.text.toString()
     };
     authViewMode.sendOTPApi(data, context);
+  }
+
+  logIn(BuildContext context, AuthViewModel authViewMode, String phone, String pass) {
+    final Map<String, String> data = {
+      'usr_email': phone,
+      'password': pass,
+    };
+    authViewMode.loginApi(data, context).then((loginResponse) async {
+      if(loginResponse.statusCode == 200){
+        Navigator.pushNamedAndRemoveUntil(context, RoutesName.apply, (route) => false);
+      }
+    }).catchError((error) {
+      if (kDebugMode) {
+        print(error);
+      }
+    });
   }
 }

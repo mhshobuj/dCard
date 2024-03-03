@@ -1,14 +1,10 @@
-
-import 'dart:math';
-
 import 'package:dma_card/res/components/round_button.dart';
 import 'package:dma_card/utils/routes/routes_name.dart';
 import 'package:dma_card/utils/utils.dart';
 import 'package:dma_card/view_model/auth_view_model.dart';
+import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
-
-import '../../view_model/login_view_model.dart';
 
 class LoginScreen extends StatefulWidget {
   const LoginScreen({super.key});
@@ -127,7 +123,15 @@ class _LoginScreenState extends State<LoginScreen> {
                     'usr_email': _emailController.text.toString(),
                     'password': _passwordController.text.toString(),
                   };
-                  authViewMode.loginApi(data, context);
+                  authViewMode.loginApi(data, context).then((loginResponse) async {
+                    if(loginResponse.statusCode == 200){
+                      Navigator.pushNamedAndRemoveUntil(context, RoutesName.landing, (route) => false);
+                    }
+                  }).catchError((error) {
+                    if (kDebugMode) {
+                      print(error);
+                    }
+                  });
                 }
               },
             ),
@@ -136,7 +140,7 @@ class _LoginScreenState extends State<LoginScreen> {
               onTap: (){
                 Navigator.pushNamed(context, RoutesName.signUp);
               },
-                child: const Text("Don't have an account? Sign Up")),
+                child: const Text("Don't have a card? Apply Card")),
           ],
         ),
       ),

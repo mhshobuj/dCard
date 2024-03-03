@@ -1,4 +1,6 @@
 
+import 'package:dma_card/model/base_response.dart';
+import 'package:dma_card/model/login_model.dart';
 import 'package:dma_card/utils/utils.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/foundation.dart';
@@ -32,16 +34,17 @@ class AuthViewModel with ChangeNotifier{
     notifyListeners();
   }
 
-  Future<void> loginApi(dynamic data, BuildContext context) async {
+  Future<LoginModel> loginApi(dynamic data, BuildContext context) async {
     setLoginLoading(true);
     try {
-      final loginResponse = await _myRepo.loginApi(data);
+      final LoginModel loginResponse = await _myRepo.loginApi(data);
 
       _loginViewModel.saveUser(loginResponse);
 
       setLoginLoading(false);
-      Utils.flushBarErrorMessage("LogIn Successfully", context);
-      Navigator.pushNamedAndRemoveUntil(context, RoutesName.landing, (route) => false);
+      return loginResponse;
+      /*Utils.flushBarErrorMessage("LogIn Successfully", context);
+      Navigator.pushNamedAndRemoveUntil(context, RoutesName.landing, (route) => false);*/
       if (kDebugMode) {
         print(loginResponse.toJson());
       }
@@ -51,15 +54,17 @@ class AuthViewModel with ChangeNotifier{
         Utils.flushBarErrorMessage(error.toString(), context);
         print(error.toString());
       }
+      // Handle the error and return null or throw it again
+      rethrow;
     }
   }
 
-  Future<void> signUpApi(dynamic data, BuildContext context) async {
+  Future<BaseResponse> signUpApi(dynamic data, BuildContext context) async {
     setSignUpLoading(true);
-    _myRepo.signUpApi(data).then((value){
+    /*_myRepo.signUpApi(data).then((value){
       setSignUpLoading(false);
-      Utils.toastMessage("SignUp Successfully");
-      Navigator.pushNamed(context, RoutesName.login);
+      //Utils.toastMessage("SignUp Successfully");
+      //Navigator.pushNamed(context, RoutesName.login);
       if (kDebugMode) {
         print(value.toString());
       }
@@ -69,7 +74,26 @@ class AuthViewModel with ChangeNotifier{
         Utils.flushBarErrorMessage(error.toString(), context);
         print(error.toString());
       }
-    });
+    });*/
+
+    try {
+      final BaseResponse signUpResponse = await _myRepo.signUpApi(data);
+      setSignUpLoading(false);
+      if (kDebugMode) {
+        print(signUpResponse.message);
+        print(signUpResponse.toJson());
+      }
+
+      return signUpResponse; // Return the cardResponse
+    } catch (error) {
+      setSignUpLoading(false);
+      if (kDebugMode) {
+        Utils.flushBarErrorMessage(error.toString(), context);
+        print(error.toString());
+      }
+      // Handle the error and return null or throw it again
+      rethrow;
+    }
   }
 
   Future<void> sendOTPApi(dynamic data, BuildContext context) async {

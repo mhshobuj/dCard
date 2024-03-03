@@ -86,13 +86,43 @@ class _OtpPopupState extends State<OtpPopup> {
 }
 
 
-class _OtpBox extends StatelessWidget {
+class _OtpBox extends StatefulWidget {
   final int index;
   final TextEditingController controller;
   final FocusNode? focusNode;
 
   const _OtpBox({Key? key, required this.index, required this.controller, this.focusNode})
       : super(key: key);
+
+  @override
+  _OtpBoxState createState() => _OtpBoxState();
+}
+
+class _OtpBoxState extends State<_OtpBox> {
+  late FocusNode _focusNode;
+
+  @override
+  void initState() {
+    super.initState();
+    _focusNode = widget.focusNode ?? FocusNode();
+    _focusNode.addListener(_onFocusChange);
+  }
+
+  @override
+  void dispose() {
+    _focusNode.removeListener(_onFocusChange);
+    if (widget.focusNode == null) {
+      _focusNode.dispose();
+    }
+    super.dispose();
+  }
+
+  void _onFocusChange() {
+    if (_focusNode.hasFocus && widget.controller.text.isEmpty) {
+      // Automatically select all text when the box gains focus if it's empty
+      widget.controller.selection = TextSelection(baseOffset: 0, extentOffset: widget.controller.text.length);
+    }
+  }
 
   @override
   Widget build(BuildContext context) {
@@ -109,7 +139,7 @@ class _OtpBox extends StatelessWidget {
         ),
       ),
       child: TextFormField(
-        controller: controller,
+        controller: widget.controller,
         keyboardType: TextInputType.number,
         textAlign: TextAlign.center,
         style: const TextStyle(fontSize: 24),
@@ -120,13 +150,20 @@ class _OtpBox extends StatelessWidget {
           hintText: '0',
           hintStyle: TextStyle(color: Colors.grey), // Set the hint text color to gray
         ),
-        focusNode: focusNode,
+        focusNode: _focusNode,
         onChanged: (value) {
-          if (value.isNotEmpty && index < 5) {
+          if (value.isNotEmpty && widget.index < 5) {
+            // Move focus to the next box
             FocusScope.of(context).nextFocus();
+          }
+          if (value.isNotEmpty && widget.index == 5) {
+            // Hide the keyboard after all boxes are filled
+            FocusScope.of(context).unfocus();
           }
         },
       ),
     );
   }
 }
+
+
