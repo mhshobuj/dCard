@@ -152,11 +152,11 @@ class CardTemplate extends StatelessWidget {
                           ],
                         );
                       },
-                    ).then((value) {
+                    ).then((value) async {
                       // This block executes after the dialog is closed
                       if (value != null && value is String) {
                         //Utils.flushBarErrorMessage(value, context);
-                        checkCard(context, value, isVerifiedNotifier);
+                        await checkCard(context, value, isVerifiedNotifier);
                       }
                     });
                   },
@@ -211,7 +211,7 @@ class CardTemplate extends StatelessWidget {
     );
   }
 
-  void checkCard(BuildContext context, String value, ValueNotifier<bool> isVerifiedNotifier) {
+  checkCard(BuildContext context, String value, ValueNotifier<bool> isVerifiedNotifier) {
     final homeViewModel = Provider.of<HomeViewModel>(context, listen: false);
     final tokenViewModel = Provider.of<TokenViewModel>(context, listen: false);
 
@@ -220,9 +220,9 @@ class CardTemplate extends StatelessWidget {
 
     tokenViewModel.getToken().then((loginModel) {
       final token = loginModel.token;
-      homeViewModel.checkCard(token!, value, context).then((checkCardResponse) {
+      homeViewModel.checkCard(token!, value, context).then((checkCardResponse) async {
         if (checkCardResponse.statusCode == 200) {
-          sendActiveOtp(context, homeViewModel, tokenViewModel, checkCardResponse.data?.cardSku, isVerifiedNotifier);
+          await sendActiveOtp(context, homeViewModel, tokenViewModel, checkCardResponse.data?.cardSku, isVerifiedNotifier);
           if (kDebugMode) {
             print(checkCardResponse.data?.cardSku);
           }
@@ -247,7 +247,7 @@ class CardTemplate extends StatelessWidget {
     });
   }
 
-  void sendActiveOtp(BuildContext context, HomeViewModel homeViewModel, TokenViewModel tokenViewModel, String? cardSku, ValueNotifier<bool> isVerifiedNotifier) {
+  sendActiveOtp(BuildContext context, HomeViewModel homeViewModel, TokenViewModel tokenViewModel, String? cardSku, ValueNotifier<bool> isVerifiedNotifier) {
     tokenViewModel.getToken().then((loginModel) {
       final token = loginModel.token;
       homeViewModel.getActiveOtp(token!, cardSku!, context).then((getActiveOtpResponse) {
@@ -261,7 +261,7 @@ class CardTemplate extends StatelessWidget {
                 if (kDebugMode) {
                   print('active $otp');
                 }
-                activeCard(context, tokenViewModel, homeViewModel, cardSku, otp);
+                await activeCard(context, tokenViewModel, homeViewModel, cardSku, otp);
               },
             ),
           );
@@ -280,7 +280,7 @@ class CardTemplate extends StatelessWidget {
     });
   }
 
-  void activeCard(BuildContext context,TokenViewModel tokenViewModel, HomeViewModel homeViewModel, String cardSku, String otp) {
+  activeCard(BuildContext context,TokenViewModel tokenViewModel, HomeViewModel homeViewModel, String cardSku, String otp) {
 
     final Map<String, String> data = {
       'otp': otp,
