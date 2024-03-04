@@ -362,7 +362,8 @@ class _SignUpScreenState extends State<SignUpScreen> {
 
   sendOtp(BuildContext context, AuthViewModel authViewMode) {
     final Map<String, String> data = {
-      'phone': _phoneController.text.toString()
+      'phone': _phoneController.text.toString(),
+      'email': _emailController.text.toString()
     };
     authViewMode.sendOTPApi(data, context);
   }
