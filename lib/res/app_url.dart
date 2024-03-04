@@ -12,5 +12,6 @@ class AppUrl {
   static var checkCard = '${baseUrl}auth/user/check-card/';
   static var getActiveOtp = '${baseUrl}nfccards/activate/scan';
   static var cardActive = '${baseUrl}nfccards/activate/otp/';
+  static var collectionHistory = '${baseUrl}paymentservice/user/transactions/list';
 
 }

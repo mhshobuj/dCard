@@ -1,5 +1,6 @@
 import 'package:dma_card/model/base_response.dart';
 import 'package:dma_card/model/check_card_model.dart';
+import 'package:dma_card/model/collection_history_response.dart';
 import 'package:dma_card/model/get_card_model.dart';
 
 import '../data/network/BaseApiServices.dart';
@@ -23,6 +24,15 @@ class HomeRepository{
     try{
       dynamic response = await _apiServices.getGetTokenApiResponseWithQuery(AppUrl.checkCard, token, query);
       return CheckCardResponse.fromJson(response);
+    }catch(e){
+      rethrow;
+    }
+  }
+
+  Future<CollectionHistoryResponse> collectionHistory(String token, String query1, String query2)async {
+    try{
+      dynamic response = await _apiServices.getGetTokenApiResponseWithMultipleQuery(AppUrl.collectionHistory, token, query1, query2);
+      return CollectionHistoryResponse.fromJson(response);
     }catch(e){
       rethrow;
     }

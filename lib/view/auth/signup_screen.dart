@@ -9,7 +9,6 @@ import '../../res/components/round_button.dart';
 import '../../utils/routes/routes_name.dart';
 import '../../utils/utils.dart';
 import '../../view_model/auth_view_model.dart';
-import '../apply/card_apply_screen.dart';
 
 class SignUpScreen extends StatefulWidget {
   const SignUpScreen({super.key});
@@ -20,7 +19,6 @@ class SignUpScreen extends StatefulWidget {
 
 class _SignUpScreenState extends State<SignUpScreen> {
   final ValueNotifier<bool> _obsecurePassword = ValueNotifier(true);
-  final ValueNotifier<bool> _isSignUpSuccess = ValueNotifier(false);
 
   final TextEditingController _firstNameController = TextEditingController();
   final TextEditingController _lastNameController = TextEditingController();
@@ -209,10 +207,8 @@ class _SignUpScreenState extends State<SignUpScreen> {
                             builder: (BuildContext context, Widget? child) {
                               return Theme(
                                 data: ThemeData.light().copyWith(
-                                  primaryColor: AppColors.buttonColor, // Set your desired background color
-                                  accentColor: AppColors.buttonColor, // Set your desired accent color
-                                  colorScheme: const ColorScheme.light(primary: AppColors.buttonColor),
-                                  buttonTheme: const ButtonThemeData(textTheme: ButtonTextTheme.primary),
+                                  primaryColor: AppColors.buttonColor,
+                                  buttonTheme: const ButtonThemeData(textTheme: ButtonTextTheme.primary), colorScheme: const ColorScheme.light(primary: AppColors.buttonColor).copyWith(secondary: AppColors.buttonColor),
                                 ),
                                 child: child!,
                               );
@@ -225,7 +221,7 @@ class _SignUpScreenState extends State<SignUpScreen> {
                           }
                         },
                         style: ElevatedButton.styleFrom(
-                          primary: AppColors.buttonColor, // Set your desired button color
+                          backgroundColor: AppColors.buttonColor, // Set your desired button color
                         ),
                         child: Text(
                           _selectedDate != null

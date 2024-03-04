@@ -1,5 +1,6 @@
 import 'package:dma_card/model/base_response.dart';
 import 'package:dma_card/model/check_card_model.dart';
+import 'package:dma_card/model/collection_history_response.dart';
 import 'package:dma_card/model/get_card_model.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/foundation.dart';
@@ -53,6 +54,26 @@ class HomeViewModel with ChangeNotifier {
     } catch (error) {
       if (kDebugMode) {
         Utils.flushBarErrorMessage(error.toString(), context);
+        print(error.toString());
+      }
+      // Handle the error and return null or throw it again
+      rethrow;
+    }
+  }
+
+  Future<CollectionHistoryResponse> collectionHistory(String token, String query1, String query2, BuildContext context) async {
+    try {
+      final CollectionHistoryResponse collectionHistoryResponse = await _myRepo.collectionHistory(token, query1,query2);
+
+      if (kDebugMode) {
+        print(collectionHistoryResponse.toJson());
+        print(collectionHistoryResponse.message);
+      }
+
+      return collectionHistoryResponse; // Return the cardResponse
+    } catch (error) {
+      if (kDebugMode) {
+        Utils.flushBarErrorMessage("${error}collection", context);
         print(error.toString());
       }
       // Handle the error and return null or throw it again

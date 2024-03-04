@@ -11,8 +11,9 @@ class NetworkApiServices extends BaseApiServices {
     dynamic responseJson;
 
     try {
-      final response =
-          await http.get(Uri.parse(url), headers: {'Authorization': 'Bearer $token'}).timeout(const Duration(seconds: 10));
+      final response = await http.get(Uri.parse(url), headers: {
+        'Authorization': 'Bearer $token'
+      }).timeout(const Duration(seconds: 10));
       responseJson = returnResponse(response);
     } on SocketException {
       throw FetchDataException("No Internet Connection");
@@ -22,13 +23,16 @@ class NetworkApiServices extends BaseApiServices {
   }
 
   @override
-  Future<dynamic> getGetTokenApiResponseWithPath(String url, String token, String path) async {
+  Future<dynamic> getGetTokenApiResponseWithPath(
+      String url, String token, String path) async {
     dynamic responseJson;
 
     try {
       // Construct the URL with the provided path
       final uri = Uri.parse('$url/$path');
-      final response = await http.get(uri, headers: {'Authorization': 'Bearer $token'}).timeout(const Duration(seconds: 10));
+      final response = await http.get(uri, headers: {
+        'Authorization': 'Bearer $token'
+      }).timeout(const Duration(seconds: 10));
       responseJson = returnResponse(response);
     } on SocketException {
       throw FetchDataException("No Internet Connection");
@@ -37,15 +41,44 @@ class NetworkApiServices extends BaseApiServices {
     return responseJson;
   }
 
-
   @override
-  Future<dynamic> getGetTokenApiResponseWithQuery(String url, String token, String query) async {
+  Future<dynamic> getGetTokenApiResponseWithQuery(
+      String url, String token, String query) async {
     dynamic responseJson;
 
     try {
       // Construct the URL with query parameters
-      final uri = Uri.parse(url).replace(queryParameters: {'card_number': query});
-      final response = await http.get(uri, headers: {'Authorization': 'Bearer $token'}).timeout(const Duration(seconds: 10));
+      final uri =
+          Uri.parse(url).replace(queryParameters: {'card_number': query});
+      final response = await http.get(uri, headers: {
+        'Authorization': 'Bearer $token'
+      }).timeout(const Duration(seconds: 10));
+      responseJson = returnResponse(response);
+    } on SocketException {
+      throw FetchDataException("No Internet Connection");
+    }
+
+    return responseJson;
+  }
+
+  @override
+  Future<dynamic> getGetTokenApiResponseWithMultipleQuery(
+      String url, String token, String query1, String query2) async {
+    dynamic responseJson;
+
+    try {
+      final Map<String, String> queryParams = {
+        'start_date': query1,
+        'end_date': query2,
+      };
+
+      final Uri uri = Uri.parse(url).replace(queryParameters: queryParams);
+
+      final response = await http.get(
+        uri,
+        headers: {'Authorization': 'Bearer $token'},
+      ).timeout(const Duration(seconds: 10));
+
       responseJson = returnResponse(response);
     } on SocketException {
       throw FetchDataException("No Internet Connection");
@@ -60,7 +93,7 @@ class NetworkApiServices extends BaseApiServices {
 
     try {
       final response =
-      await http.get(Uri.parse(url)).timeout(const Duration(seconds: 10));
+          await http.get(Uri.parse(url)).timeout(const Duration(seconds: 10));
       responseJson = returnResponse(response);
     } on SocketException {
       throw FetchDataException("No Internet Connection");
@@ -89,7 +122,8 @@ class NetworkApiServices extends BaseApiServices {
     dynamic responseJson;
 
     try {
-      Response response = await post(Uri.parse(url), headers: {'Authorization': 'Bearer $token'}, body: data)
+      Response response = await post(Uri.parse(url),
+              headers: {'Authorization': 'Bearer $token'}, body: data)
           .timeout(const Duration(seconds: 10));
       responseJson = returnResponse(response);
     } on SocketException {

@@ -1,5 +1,9 @@
+import 'package:dma_card/model/collection_history_response.dart';
 import 'package:dma_card/res/color.dart';
+import 'package:dma_card/view/home/transaction_list.dart';
+import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
+import 'package:intl/intl.dart';
 import 'package:provider/provider.dart';
 
 import '../../model/get_card_model.dart';
@@ -16,6 +20,7 @@ class HomeScreen extends StatefulWidget {
 
 class _HomeScreenState extends State<HomeScreen> {
   GetCardModel? getCardResponse; // Store the card response here
+  CollectionHistoryResponse? collectionResponse;
   bool isLoading = true; // Track loading state
 
   @override
@@ -24,6 +29,7 @@ class _HomeScreenState extends State<HomeScreen> {
     WidgetsBinding.instance.addPostFrameCallback((_) {
       // Fetch card info after the widget is built
       getCardInfo();
+      getCollectionHistory();
     });
   }
 
@@ -85,18 +91,7 @@ class _HomeScreenState extends State<HomeScreen> {
                     ),
                   ),
                 ),
-                Expanded(
-                  child: ListView.builder(
-                    itemCount: 10,
-                    itemBuilder: (context, index) {
-                      return ListTile(
-                        title: Text('Transaction $index'),
-                        subtitle: const Text('Transaction details'),
-                        trailing: const Text('\$10.00'),
-                      );
-                    },
-                  ),
-                ),
+                TransactionListWidget(collectionResponse: collectionResponse)
               ],
             ),
     );
@@ -115,11 +110,54 @@ class _HomeScreenState extends State<HomeScreen> {
           isLoading = false; // Update loading state when data is received
         });
       }).catchError((error) {
-        print(error);
+        if (kDebugMode) {
+          print(error);
+        }
         // Handle error here
       });
     }).catchError((error) {
-      print(error);
+      if (kDebugMode) {
+        print(error);
+      }
+      // Handle error here
+    });
+  }
+
+  void getCollectionHistory() {
+    final homeViewModel = Provider.of<HomeViewModel>(context, listen: false);
+    final tokenViewModel = Provider.of<TokenViewModel>(context, listen: false);
+
+    // Get today's date
+    DateTime today = DateTime.now();
+    // Calculate the date 7 days ago
+    DateTime sevenDaysAgo = today.subtract(const Duration(days: 7));
+
+    // Format dates as strings in 'yyyy-MM-dd' format
+    String startDate = DateFormat('yyyy-MM-dd').format(sevenDaysAgo);
+    String endDate = DateFormat('yyyy-MM-dd').format(today);
+
+    tokenViewModel.getToken().then((loginModel) {
+      final token = loginModel.token;
+      homeViewModel.collectionHistory(token!,startDate, endDate, context).then((collectionResponse) {
+        // Update the state based on the hasCard value
+        setState(() {
+          this.collectionResponse = collectionResponse;
+          isLoading = false; // Update loading state when data is received
+        });
+        if (kDebugMode) {
+          print(collectionResponse.data?.length.toString());
+        }
+
+      }).catchError((error) {
+        if (kDebugMode) {
+          print(error);
+        }
+        // Handle error here
+      });
+    }).catchError((error) {
+      if (kDebugMode) {
+        print(error);
+      }
       // Handle error here
     });
   }
