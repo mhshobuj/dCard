@@ -5,6 +5,7 @@ import 'package:dma_card/view_model/area_list_view_model.dart';
 import 'package:dma_card/view_model/auth_view_model.dart';
 import 'package:dma_card/view_model/home_view_model.dart';
 import 'package:dma_card/view_model/login_view_model.dart';
+import 'package:dma_card/view_model/rewards_view_model.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:provider/provider.dart';
@@ -48,6 +49,7 @@ class MyApp extends StatelessWidget {
         ChangeNotifierProvider(create: (_) => TokenViewModel()),
         ChangeNotifierProvider(create: (_) => HomeViewModel()),
         ChangeNotifierProvider(create: (_) => AreaViewModel()),
+        ChangeNotifierProvider(create: (_) => RewardsViewModel()),
       ],
       child: MaterialApp(
         debugShowCheckedModeBanner: false,

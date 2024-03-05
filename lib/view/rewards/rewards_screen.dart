@@ -1,6 +1,11 @@
+import 'package:dma_card/model/rewards_list_model.dart';
+import 'package:dma_card/view_model/rewards_view_model.dart';
+import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
+import 'package:provider/provider.dart';
 
 import '../../res/color.dart';
+import '../../view_model/login_view_model.dart';
 
 class RewardsScreen extends StatefulWidget {
   const RewardsScreen({Key? key}) : super(key: key);
@@ -10,33 +15,25 @@ class RewardsScreen extends StatefulWidget {
 }
 
 class _RewardsScreenState extends State<RewardsScreen> {
-  // Dummy rewards data for testing
-  List<Map<String, dynamic>> rewardsList = [
-    {
-      'imageLogo': 'assets/images/dcard_logo.png',
-      'purpose': 'Purchase at SuperMart',
-      'time': '10:30 AM',
-      'amount': 200.0,
-      'rewardValue': 20.0,
-    },
-    {
-      'imageLogo': 'assets/images/dcard_logo.png',
-      'purpose': 'Online Payment',
-      'time': '02:45 PM',
-      'amount': 150.0,
-      'rewardValue': 15.0,
-    },
-    // Add more dummy data as needed
-  ];
+
+  RewardListResponse? rewardListResponse;
+
+  @override
+  void initState() {
+    super.initState();
+    WidgetsBinding.instance.addPostFrameCallback((_) {
+      getRewardsList();
+    });
+  }
 
   @override
   Widget build(BuildContext context) {
-    // Calculate total rewards
-    double totalRewards = rewardsList.fold(
-        0, (previousValue, element) => previousValue + element['rewardValue']);
-
     return Scaffold(
-      body: Column(
+      body: rewardListResponse == null
+          ? const Center(
+        child: CircularProgressIndicator(), // Display a loading indicator
+      )
+          : Column(
         crossAxisAlignment: CrossAxisAlignment.stretch,
         children: [
           // Total rewards section
@@ -57,20 +54,20 @@ class _RewardsScreenState extends State<RewardsScreen> {
                   const SizedBox(height: 20),
                   // Total rewards text
                   const Text(
-                    'Total Rewards',
+                    'Total Reward Points',
                     style: TextStyle(
                       fontSize: 20,
-                      fontWeight: FontWeight.bold
+                      fontWeight: FontWeight.bold,
                     ),
                   ),
                   const SizedBox(height: 10),
                   // Total rewards value
                   Text(
-                    totalRewards.toStringAsFixed(2),
+                    rewardListResponse!.data!.rewardPoints.toString(),
                     style: const TextStyle(
                       fontSize: 18,
                       fontWeight: FontWeight.bold,
-                        color: AppColors.buttonColor
+                      color: AppColors.buttonColor,
                     ),
                   ),
                 ],
@@ -79,27 +76,57 @@ class _RewardsScreenState extends State<RewardsScreen> {
           ),
           // Rewards list
           Expanded(
-            child: ListView.builder(
-              itemCount: rewardsList.length,
+            child: rewardListResponse!.data!.redeems!.isEmpty
+                ? const Center(
+              child: Text("No rewards happened yet"),
+            )
+                : ListView.builder(
+              itemCount: rewardListResponse!.data!.redeems!.length,
               itemBuilder: (context, index) {
-                Map<String, dynamic> rewards = rewardsList[index];
+                Redeems redeem = rewardListResponse!.data!.redeems![index];
                 return Card(
                   elevation: 3,
                   margin: const EdgeInsets.symmetric(vertical: 8, horizontal: 16),
                   child: ListTile(
-                    leading: Image.asset(
-                      rewards['imageLogo'],
-                      width: 60,
-                      height: 60,
-                      fit: BoxFit.cover,
+                    leading: Padding(
+                      padding: const EdgeInsets.only(left: 2.0), // Add left margin
+                      child: SizedBox(
+                        height: 60, // Adjust height as needed
+                        width: 60, // Adjust width as needed
+                        child: CircleAvatar(
+                          backgroundImage: NetworkImage(
+                            redeem.merchantLogo ?? '',
+                          ),
+                        ),
+                      ),
                     ),
-                    title: Text(rewards['purpose']),
+                    title: Text(redeem.purpose ?? ''),
                     subtitle: Column(
                       crossAxisAlignment: CrossAxisAlignment.start,
                       children: [
-                        Text('Time: ${rewards['time']}'),
-                        Text('Amount: \$${rewards['amount'].toStringAsFixed(2)}'),
-                        Text('Reward Value: \$${rewards['rewardValue'].toStringAsFixed(2)}'),
+                        Text('Paid at: ${redeem.createdAt ?? ''}'),
+                        Text(
+                          'Amount: ${redeem.amount?.toStringAsFixed(2) ?? ""} TK',
+                          style: const TextStyle(fontWeight: FontWeight.bold), // Example styling
+                        ),
+                        if (redeem.serviceDetail!.earnedPoints! > 0)
+                          Row(
+                            children: [
+                              const Icon(Icons.add, color: Colors.green), // Add icon for earned points
+                              Text('Earned points: ${redeem.serviceDetail?.earnedPoints ?? '0'}',
+                                style: const TextStyle(color: Colors.green, fontWeight: FontWeight.bold),
+                              ),
+                            ],
+                          ),
+                        if (redeem.serviceDetail!.usedPoint! > 0)
+                          Row(
+                            children: [
+                              const Icon(Icons.remove, color: Colors.red), // Add icon for used points
+                              Text('Redeem points: ${redeem.serviceDetail?.usedPoint ?? '0'}',
+                                style: const TextStyle(color: Colors.red, fontWeight: FontWeight.bold),
+                              ),
+                            ],
+                          ),
                       ],
                     ),
                   ),
@@ -110,6 +137,37 @@ class _RewardsScreenState extends State<RewardsScreen> {
         ],
       ),
     );
+  }
+
+
+
+  void getRewardsList() {
+    final rewardsViewModel = Provider.of<RewardsViewModel>(context, listen: false);
+    final tokenViewModel = Provider.of<TokenViewModel>(context, listen: false);
+
+    tokenViewModel.getToken().then((loginModel) {
+      final token = loginModel.token;
+      rewardsViewModel.getRewardsList(token!, context).then((rewardsResponse) {
+        // Update the state based on the hasCard value
+        setState(() {
+          rewardListResponse = rewardsResponse;
+        });
+        if (kDebugMode) {
+          print(rewardsResponse.data?.redeems?.length.toString());
+        }
+
+      }).catchError((error) {
+        if (kDebugMode) {
+          print(error);
+        }
+        // Handle error here
+      });
+    }).catchError((error) {
+      if (kDebugMode) {
+        print(error);
+      }
+      // Handle error here
+    });
   }
 }
 
