@@ -6,7 +6,6 @@ import 'package:flutter/cupertino.dart';
 import 'package:flutter/foundation.dart';
 
 import '../repository/auth_repository.dart';
-import '../utils/routes/routes_name.dart';
 import 'login_view_model.dart';
 
 class AuthViewModel with ChangeNotifier{
