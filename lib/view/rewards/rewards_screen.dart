@@ -78,7 +78,7 @@ class _RewardsScreenState extends State<RewardsScreen> {
                   child: rewardListResponse!.data!.redeems!.isEmpty
                       ? const Center(
                           child: Text(
-                            "No rewards happened yet",
+                            "No rewards get yet",
                             style: TextStyle(
                                 fontSize: 16, fontWeight: FontWeight.bold),
                           ),

@@ -20,6 +20,7 @@ class CardTemplate extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     ValueNotifier<bool> isVerifiedNotifier = ValueNotifier(false);
+    bool isLoading = false; // Track loading state
     return Container(
       margin: const EdgeInsets.all(5),
       width: MediaQuery.of(context).size.width - 10,
@@ -115,41 +116,58 @@ class CardTemplate extends StatelessWidget {
               child: SizedBox(
                 height: 40, // Set your desired margin height
                 child: ElevatedButton(
-                  onPressed: () {
-                    // Handle Apply Card button press
+                  onPressed: isLoading
+                      ? null
+                      : () {
                     showDialog(
                       context: context,
                       builder: (BuildContext context) {
                         String inputText = ''; // Variable to store entered text
-
-                        return AlertDialog(
-                          title: const Text('Enter your card number'),
-                          content: TextField(
-                            maxLength: 16,
-                            keyboardType: TextInputType.number,
-                            decoration: const InputDecoration(
-                              hintText: '16-digit card number',
-                            ),
-                            onChanged: (value) {
-                              inputText = value; // Update inputText when the text changes
-                            },
-                          ),
-                          actions: [
-                            ElevatedButton(
-                              onPressed: () {
-                                if (inputText.length != 16) {
-                                  // Check if input length is not 16
-                                  Utils.flushBarErrorMessage('Please enter a 16-digit card number', context);
-                                } else {
-                                  Navigator.of(context).pop(inputText); // Close the dialog and pass inputText
-                                }
-                              },
-                              style: ElevatedButton.styleFrom(
-                                primary: AppColors.buttonColor, // Set button background color
+                        return StatefulBuilder(
+                          builder: (context, setState) {
+                            return AlertDialog(
+                              title: const Text('Enter your card number'),
+                              content: TextField(
+                                maxLength: 16,
+                                keyboardType: TextInputType.number,
+                                decoration: const InputDecoration(
+                                  hintText: '16-digit card number',
+                                ),
+                                onChanged: (value) {
+                                  inputText = value; // Update inputText when the text changes
+                                },
                               ),
-                              child: const Text('Activate'),
-                            ),
-                          ],
+                              actions: [
+                                Stack(
+                                  alignment: Alignment.center,
+                                  children: [
+                                    ElevatedButton(
+                                      onPressed: isLoading
+                                          ? null
+                                          : () async {
+                                        if (inputText.length != 16) {
+                                          Utils.flushBarErrorMessage(
+                                              'Please enter a 16-digit card number', context);
+                                        } else {
+                                          setState(() {
+                                            isLoading = true; // Start loading
+                                          });
+                                          await checkCard(
+                                              context, inputText, isVerifiedNotifier);
+                                        }
+                                      },
+                                      style: ElevatedButton.styleFrom(
+                                        primary: AppColors.buttonColor, // Set button background color
+                                      ),
+                                      child: const Text('Activate'), // Button text
+                                    ),
+                                    if (isLoading) // Show progress indicator if loading
+                                      const CircularProgressIndicator(),
+                                  ],
+                                ),
+                              ],
+                            );
+                          },
                         );
                       },
                     ).then((value) async {
@@ -163,7 +181,7 @@ class CardTemplate extends StatelessWidget {
                   style: ElevatedButton.styleFrom(
                     primary: AppColors.buttonColor,
                   ),
-                  child: const Text('Press to activate'),
+                  child: const Text('Press to Activate'),
                 ),
               ),
             ),
@@ -291,6 +309,8 @@ class CardTemplate extends StatelessWidget {
       final token = loginModel.token;
       homeViewModel.activeCard(context, token!,data ).then((activeCardResponse) {
         if(activeCardResponse.statusCode == 200){
+          Navigator.of(context);
+          Navigator.pushNamedAndRemoveUntil(context, RoutesName.landing, (route) => false);
           if (kDebugMode) {
             print(activeCardResponse.message);
           }
