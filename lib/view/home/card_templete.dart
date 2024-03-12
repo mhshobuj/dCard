@@ -5,11 +5,11 @@ import '../../model/get_card_model.dart';
 import '../../res/color.dart';
 import '../../res/components/otp_popup.dart';
 import '../../utils/routes/routes_name.dart';
-import '../../utils/utils.dart';
 import '../../view_model/home_view_model.dart';
 import '../../view_model/login_view_model.dart';
+import 'card_number_input_dialog.dart';
 
-class CardTemplate extends StatelessWidget {
+class CardTemplate extends StatefulWidget {
   const CardTemplate({
     Key? key,
     required this.getCardResponse,
@@ -17,6 +17,11 @@ class CardTemplate extends StatelessWidget {
 
   final GetCardModel? getCardResponse;
 
+  @override
+  State<CardTemplate> createState() => _CardTemplateState();
+}
+
+class _CardTemplateState extends State<CardTemplate> {
   @override
   Widget build(BuildContext context) {
     ValueNotifier<bool> isVerifiedNotifier = ValueNotifier(false);
@@ -34,7 +39,7 @@ class CardTemplate extends StatelessWidget {
       ),
       child: Stack(
         children: [
-          if (!(getCardResponse?.hasCard ?? false))
+          if (!(widget.getCardResponse?.hasCard ?? false))
             Center(
               child: SizedBox(
                 height: 40, // Set your desired margin height
@@ -50,8 +55,8 @@ class CardTemplate extends StatelessWidget {
                 ),
               ),
             ),
-          if (getCardResponse?.hasCard ?? false)
-            if(getCardResponse?.data?.request?.status == 'PENDING')
+          if (widget.getCardResponse?.hasCard ?? false)
+            if(widget.getCardResponse?.data?.request?.status == 'PENDING')
               Container(
                 margin: const EdgeInsets.only(top: 100), // Adjust the top margin as needed
                 child: Center(
@@ -71,7 +76,7 @@ class CardTemplate extends StatelessWidget {
                   ),
                 ),
               ),
-          if(getCardResponse?.data?.request?.status == 'PRINTING')
+          if(widget.getCardResponse?.data?.request?.status == 'PRINTING')
             Container(
               margin: const EdgeInsets.only(top: 100), // Adjust the top margin as needed
               child: Center(
@@ -91,7 +96,7 @@ class CardTemplate extends StatelessWidget {
                 ),
               ),
             ),
-          if(getCardResponse?.data?.request?.status == 'PRINTED')
+          if(widget.getCardResponse?.data?.request?.status == 'PRINTED')
             Container(
               margin: const EdgeInsets.only(top: 100), // Adjust the top margin as needed
               child: Center(
@@ -111,81 +116,34 @@ class CardTemplate extends StatelessWidget {
                 ),
               ),
             ),
-          if(getCardResponse?.data?.request?.status == 'IN-DELIVERY')
+          if(widget.getCardResponse?.data?.request?.status == 'IN-DELIVERY')
             Center(
               child: SizedBox(
                 height: 40, // Set your desired margin height
                 child: ElevatedButton(
-                  onPressed: isLoading
-                      ? null
-                      : () {
-                    showDialog(
-                      context: context,
-                      builder: (BuildContext context) {
-                        String inputText = ''; // Variable to store entered text
-                        return StatefulBuilder(
-                          builder: (context, setState) {
-                            return AlertDialog(
-                              title: const Text('Enter your card number'),
-                              content: TextField(
-                                maxLength: 16,
-                                keyboardType: TextInputType.number,
-                                decoration: const InputDecoration(
-                                  hintText: '16-digit card number',
-                                ),
-                                onChanged: (value) {
-                                  inputText = value; // Update inputText when the text changes
-                                },
-                              ),
-                              actions: [
-                                Stack(
-                                  alignment: Alignment.center,
-                                  children: [
-                                    ElevatedButton(
-                                      onPressed: isLoading
-                                          ? null
-                                          : () async {
-                                        if (inputText.length != 16) {
-                                          Utils.flushBarErrorMessage(
-                                              'Please enter a 16-digit card number', context);
-                                        } else {
-                                          setState(() {
-                                            isLoading = true; // Start loading
-                                          });
-                                          await checkCard(
-                                              context, inputText, isVerifiedNotifier);
-                                        }
-                                      },
-                                      style: ElevatedButton.styleFrom(
-                                        primary: AppColors.buttonColor, // Set button background color
-                                      ),
-                                      child: const Text('Activate'), // Button text
-                                    ),
-                                    if (isLoading) // Show progress indicator if loading
-                                      const CircularProgressIndicator(),
-                                  ],
-                                ),
-                              ],
-                            );
-                          },
-                        );
-                      },
-                    ).then((value) async {
-                      // This block executes after the dialog is closed
-                      if (value != null && value is String) {
-                        //Utils.flushBarErrorMessage(value, context);
-                        await checkCard(context, value, isVerifiedNotifier);
-                      }
-                    });
+                  onPressed: isLoading ? null : () async {
+                    final cardNumber = await showCreditCardDialog(context);
+                    if (cardNumber != null) {
+                      setState(() {
+                        isLoading = true; // Start loading
+                      });
+                      await checkCard(context, cardNumber, isVerifiedNotifier);
+                    }
                   },
                   style: ElevatedButton.styleFrom(
                     primary: AppColors.buttonColor,
+                    shape: RoundedRectangleBorder(
+                      borderRadius: BorderRadius.circular(6.0), // Adjust as needed
+                    ),
                   ),
-                  child: const Text('Press to Activate'),
+                  child: const Text(
+                    'Press to Activate',
+                    style: TextStyle(fontSize: 16, fontWeight: FontWeight.bold), // Adjust as needed
+                  ),
                 ),
               ),
             ),
-          if(getCardResponse?.data?.request?.status == 'ACTIVE')
+          if(widget.getCardResponse?.data?.request?.status == 'ACTIVE')
           Positioned(
             bottom: 20,
             left: 20,
@@ -203,7 +161,7 @@ class CardTemplate extends StatelessWidget {
                     ).createShader(bounds);
                   },
                   child: Text(
-                    getCardResponse?.data?.cardNumber?.replaceAllMapped(
+                    widget.getCardResponse?.data?.cardNumber?.replaceAllMapped(
                         RegExp(r'.{4}'), (match) => '${match.group(0)} ') ?? '',
                     style: const TextStyle(
                       color: Colors.white,
@@ -214,7 +172,7 @@ class CardTemplate extends StatelessWidget {
                 ),
                 const SizedBox(height: 6),
                 Text(
-                  getCardResponse?.data?.userName?.toUpperCase() ?? '',
+                  widget.getCardResponse?.data?.userName?.toUpperCase() ?? '',
                   style: const TextStyle(
                     color: Colors.white,
                     fontSize: 24,
@@ -226,6 +184,13 @@ class CardTemplate extends StatelessWidget {
           ),
         ],
       ),
+    );
+  }
+
+  Future<String?> showCreditCardDialog(BuildContext context) async {
+    return await showDialog(
+      context: context,
+      builder: (context) => CreditCardNumberDialog(),
     );
   }
 
