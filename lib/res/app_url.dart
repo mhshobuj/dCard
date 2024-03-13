@@ -9,6 +9,7 @@ class AppUrl {
   static var getAreaUrl = '${baseUrl}upazilas/65/';
   static var updateAddress = '${baseUrl}auth/user/address/';
   static var applyCard = '${baseUrl}org/card/apply/';
+  static var applyCardOnlinePay = '${baseUrl}org/card/apply/online-fee/';
   static var checkCard = '${baseUrl}auth/user/check-card/';
   static var getActiveOtp = '${baseUrl}nfccards/activate/scan';
   static var cardActive = '${baseUrl}nfccards/activate/otp/';

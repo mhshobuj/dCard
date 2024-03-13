@@ -1,6 +1,7 @@
 import 'package:dma_card/model/apply_card_model.dart';
 import 'package:dma_card/model/base_response.dart';
 import 'package:dma_card/model/get_area_list.dart';
+import 'package:dma_card/model/online_fee_with_apply_response.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/foundation.dart';
 
@@ -48,7 +49,7 @@ class AreaViewModel with ChangeNotifier {
           await _myRepo.updateAddress(token, data);
 
       print(updateResponse.message);
-      setUpdateLoading(false);
+      //setUpdateLoading(false);
       if (kDebugMode) {
         print(updateResponse.toJson());
       }
@@ -76,6 +77,24 @@ class AreaViewModel with ChangeNotifier {
       }
 
       return applyCardResponse; // Return the cardResponse
+    } catch (error) {
+      setUpdateLoading(false);
+      if (kDebugMode) {
+        //Utils.flushBarErrorMessage(error.toString(), context);
+        print(error.toString());
+      }
+      // Handle the error and return null or throw it again
+      throw error;
+    }
+  }
+
+  Future<CardRequestResponse> applyCardOnlineFee(BuildContext context, String token, dynamic data) async {
+    setUpdateLoading(true);
+    try {
+      final CardRequestResponse cardRequestResponseOnlineFee = await _myRepo.applyCardOnlineFee(token, data);
+      setUpdateLoading(false);
+
+      return cardRequestResponseOnlineFee; // Return the cardResponse
     } catch (error) {
       setUpdateLoading(false);
       if (kDebugMode) {

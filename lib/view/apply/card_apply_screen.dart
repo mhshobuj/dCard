@@ -1,4 +1,5 @@
 import 'package:dma_card/model/get_area_list.dart';
+import 'package:dma_card/view/apply/card_fee_payment_screen.dart';
 import 'package:dma_card/view_model/area_list_view_model.dart';
 import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
@@ -17,20 +18,21 @@ class ApplyCardScreen extends StatefulWidget {
 }
 
 class _ApplyCardScreenState extends State<ApplyCardScreen> {
-
   final TextEditingController _cardNameController = TextEditingController();
   final TextEditingController _addressController = TextEditingController();
 
   FocusNode cardFocusNode = FocusNode();
   FocusNode addressFocusNode = FocusNode();
 
-  String _selectedPayment = 'cash';
+  String _selectedPayment = 'online';
   String _pickedLocation = '';
   String _selectedArea = '';
   List<Data> filteredAreas = [];
 
   GetAreaList? getAreaResponse;
   Set<String> uniqueAreaNames = <String>{};
+
+  bool _isLoading = false; // Track loading state
 
   @override
   void dispose() {
@@ -48,8 +50,6 @@ class _ApplyCardScreenState extends State<ApplyCardScreen> {
       getAreaList();
     });
   }
-
-
 
   @override
   Widget build(BuildContext context) {
@@ -88,7 +88,8 @@ class _ApplyCardScreenState extends State<ApplyCardScreen> {
                   hintText: 'Enter preferred card name',
                 ),
                 onFieldSubmitted: (value) {
-                  Utils.fieldFocusChange(context, cardFocusNode, addressFocusNode);
+                  Utils.fieldFocusChange(
+                      context, cardFocusNode, addressFocusNode);
                 },
               ),
               const SizedBox(height: 20),
@@ -138,12 +139,20 @@ class _ApplyCardScreenState extends State<ApplyCardScreen> {
                 ),
               ),
               DropdownButtonFormField<String>(
-                items: ['Crimson Cup Banani 11', 'Crimson Cup Bashundhara', 'Crimson Cup Dhanmondi 2', 'Crimson Cup Dhanmondi 27',
-                  'Crimson Cup Gulshan 1', 'Crimson Cup Mirpur 1', 'Crimson Cup Mirpur 12', 'Crimson Cup Uttara-13']
+                items: [
+                  'Crimson Cup Banani 11',
+                  'Crimson Cup Bashundhara',
+                  'Crimson Cup Dhanmondi 2',
+                  'Crimson Cup Dhanmondi 27',
+                  'Crimson Cup Gulshan 1',
+                  'Crimson Cup Mirpur 1',
+                  'Crimson Cup Mirpur 12',
+                  'Crimson Cup Uttara-13'
+                ]
                     .map((String value) => DropdownMenuItem<String>(
-                  value: value,
-                  child: Text(value),
-                ))
+                          value: value,
+                          child: Text(value),
+                        ))
                     .toList(),
                 onChanged: (String? newValue) {
                   setState(() {
@@ -154,10 +163,10 @@ class _ApplyCardScreenState extends State<ApplyCardScreen> {
               const SizedBox(height: 20),
               Row(
                 children: [
-                  const Text("Select Payment Method:"),
+                  const Text("Payment Method:"),
                   const SizedBox(width: 10),
                   Radio(
-                    value: 'cash',
+                    value: 'online',
                     groupValue: _selectedPayment,
                     onChanged: (value) {
                       setState(() {
@@ -165,12 +174,12 @@ class _ApplyCardScreenState extends State<ApplyCardScreen> {
                       });
                     },
                   ),
-                  const Text("Cash"),
+                  const Text("Online"),
                 ],
               ),
               const SizedBox(height: 15.0),
               const SizedBox(height: 20),
-              RoundButton(
+              /*RoundButton(
                 title: "Apply",
                 loading: areaViewModel.getUpdateLoading,
                 onPress: () async {
@@ -206,7 +215,11 @@ class _ApplyCardScreenState extends State<ApplyCardScreen> {
                             'card_name': _cardNameController.text.toString(),
                             'card_pickup_point': _pickedLocation,
                           };
-                          applyCard(tokenViewModel, areaViewModel, data);
+                          if(_selectedPayment == 'online'){
+                            applyCardOnlineFee(tokenViewModel, areaViewModel, data);
+                          }else {
+                            applyCard(tokenViewModel, areaViewModel, data);
+                          }
                         }
                       }).catchError((error) {
                         if (kDebugMode) {
@@ -222,6 +235,88 @@ class _ApplyCardScreenState extends State<ApplyCardScreen> {
                     });
                   }
                 },
+              ),*/
+
+              Stack(
+                children: [
+                  RoundButton(
+                    title: _isLoading ? "" : "Apply", // Hide text when loading
+                    onPress: () async {
+                      setState(() {
+                        _isLoading = true;
+                      });
+                      if (_cardNameController.text.isEmpty) {
+                        Utils.flushBarErrorMessage(
+                            "The preferred card name is required!", context);
+                      } else if (_addressController.text.isEmpty) {
+                        Utils.flushBarErrorMessage(
+                            "The address is required!", context);
+                      } else if (_selectedArea.isEmpty) {
+                        Utils.flushBarErrorMessage(
+                            "Please select your area.", context);
+                      } else if (_pickedLocation.isEmpty) {
+                        Utils.flushBarErrorMessage(
+                            "Please select your card pickup location.",
+                            context);
+                      } else if (_selectedPayment.isEmpty) {
+                        Utils.flushBarErrorMessage(
+                            "Please select your payment method.", context);
+                      } else {
+                        final Map<String, String> data = {
+                          'address_line_1': _addressController.text.toString(),
+                          'upazila': _selectedArea,
+                          'city': 'Dhaka',
+                          'state': 'BD',
+                          'post_code': '1205'
+                        };
+                        tokenViewModel.getToken().then((loginModel) {
+                          final token = loginModel.token;
+                          areaViewModel
+                              .updateAddress(context, token!, data)
+                              .then((updateAddressResponse) {
+                            // Update the state based on the hasCard value
+                            if (updateAddressResponse.statusCode == 200) {
+                              final Map<String, String> data = {
+                                'service_id': '1',
+                                'service_type': 'RPS',
+                                'service_merchant': '1',
+                                'platform': 'Android',
+                                'delivery_method': 'Home',
+                                'card_name':
+                                    _cardNameController.text.toString(),
+                                'card_pickup_point': _pickedLocation,
+                              };
+                              if (_selectedPayment == 'online') {
+                                applyCardOnlineFee(
+                                    tokenViewModel, areaViewModel, data);
+                              } else {
+                                applyCard(tokenViewModel, areaViewModel, data);
+                              }
+                            }
+                          }).catchError((error) {
+                            if (kDebugMode) {
+                              print(error);
+                            }
+                            // Handle error here
+                          });
+                        }).catchError((error) {
+                          if (kDebugMode) {
+                            print(error);
+                          }
+                          // Handle error here
+                        });
+                      }
+                    },
+                  ),
+                  if (_isLoading)
+                    const Positioned.fill(
+                      child: Center(
+                        child: CircularProgressIndicator(
+                          valueColor: AlwaysStoppedAnimation<Color>(Colors.white),
+                        ),
+                      ),
+                    ),
+                ],
               ),
             ],
           ),
@@ -235,7 +330,8 @@ class _ApplyCardScreenState extends State<ApplyCardScreen> {
     areaViewModel.getAreaList(context).then((response) {
       setState(() {
         getAreaResponse = response;
-        uniqueAreaNames = response.data?.map((areaData) => areaData.name!).toSet() ?? {};
+        uniqueAreaNames =
+            response.data?.map((areaData) => areaData.name!).toSet() ?? {};
         filteredAreas = response.data ?? [];
         _selectedArea = uniqueAreaNames.isNotEmpty ? uniqueAreaNames.first : '';
       });
@@ -246,13 +342,55 @@ class _ApplyCardScreenState extends State<ApplyCardScreen> {
     });
   }
 
-  void applyCard(TokenViewModel tokenViewModel, AreaViewModel areaViewModel, Map<String, String> data) {
+  void applyCard(TokenViewModel tokenViewModel, AreaViewModel areaViewModel,
+      Map<String, String> data) {
     tokenViewModel.getToken().then((loginModel) {
       final token = loginModel.token;
-      areaViewModel.applyCard(context, token!, data).then((applyCardResponse){
-        if(applyCardResponse.statusCode == 200){
+      areaViewModel.applyCard(context, token!, data).then((applyCardResponse) {
+        if (applyCardResponse.statusCode == 200) {
           Utils.flushBarErrorMessage("Apply Successfully", context);
-          Navigator.pushNamedAndRemoveUntil(context, RoutesName.landing, (route) => false);
+          Navigator.pushNamedAndRemoveUntil(
+              context, RoutesName.landing, (route) => false);
+        }
+      }).catchError((error) {
+        if (kDebugMode) {
+          print(error);
+        }
+        // Handle error here
+      });
+    }).catchError((error) {
+      if (kDebugMode) {
+        print(error);
+      }
+      // Handle error here
+    });
+  }
+
+  void applyCardOnlineFee(TokenViewModel tokenViewModel,
+      AreaViewModel areaViewModel, Map<String, String> data) {
+    tokenViewModel.getToken().then((loginModel) {
+      final token = loginModel.token;
+      areaViewModel
+          .applyCardOnlineFee(context, token!, data)
+          .then((applyCardResponseOnlineFee) {
+        if (applyCardResponseOnlineFee.statusCode == 200) {
+          Utils.flushBarErrorMessage("Apply Successfully", context);
+          if (kDebugMode) {
+            print(applyCardResponseOnlineFee
+                .data.sslresponse.data.redirectGatewayURL);
+          }
+          //loading off
+          setState(() {
+            _isLoading = false;
+          });
+          String url = applyCardResponseOnlineFee
+              .data.sslresponse.data.redirectGatewayURL;
+          Navigator.push(
+            context,
+            MaterialPageRoute(
+              builder: (context) => CardFeePayment(url: url),
+            ),
+          );
         }
       }).catchError((error) {
         if (kDebugMode) {
@@ -268,4 +406,3 @@ class _ApplyCardScreenState extends State<ApplyCardScreen> {
     });
   }
 }
-

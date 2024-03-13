@@ -143,6 +143,33 @@ class _CardTemplateState extends State<CardTemplate> {
                 ),
               ),
             ),
+          if(widget.getCardResponse?.data?.request?.status == 'FEE_UNPAID')
+            Center(
+              child: SizedBox(
+                height: 40, // Set your desired margin height
+                child: ElevatedButton(
+                  onPressed: isLoading ? null : () async {
+                    /*final cardNumber = await showCreditCardDialog(context);
+                    if (cardNumber != null) {
+                      setState(() {
+                        isLoading = true; // Start loading
+                      });
+                      await checkCard(context, cardNumber, isVerifiedNotifier);
+                    }*/
+                  },
+                  style: ElevatedButton.styleFrom(
+                    primary: AppColors.buttonColor,
+                    shape: RoundedRectangleBorder(
+                      borderRadius: BorderRadius.circular(6.0), // Adjust as needed
+                    ),
+                  ),
+                  child: const Text(
+                    'Pay Now',
+                    style: TextStyle(fontSize: 16, fontWeight: FontWeight.bold), // Adjust as needed
+                  ),
+                ),
+              ),
+            ),
           if(widget.getCardResponse?.data?.request?.status == 'ACTIVE')
           Positioned(
             bottom: 20,
