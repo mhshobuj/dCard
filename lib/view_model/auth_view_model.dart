@@ -1,5 +1,6 @@
 
 import 'package:dma_card/model/base_response.dart';
+import 'package:dma_card/model/forgot_pass_verify_response.dart';
 import 'package:dma_card/model/login_model.dart';
 import 'package:dma_card/utils/utils.dart';
 import 'package:flutter/cupertino.dart';
@@ -110,5 +111,33 @@ class AuthViewModel with ChangeNotifier{
         print(error.toString());
       }
     });
+  }
+
+  Future<ForgotPassVerifyResponse> forgetPassVerify(dynamic data, BuildContext context) async {
+    try {
+      final ForgotPassVerifyResponse forgotPassVerifyResponse = await _myRepo.forgotPassVerifyResponse(data);
+      return forgotPassVerifyResponse;
+    } catch (error) {
+      if (kDebugMode) {
+        Utils.flushBarErrorMessage(error.toString(), context);
+        print(error.toString());
+      }
+      // Handle the error and return null or throw it again
+      rethrow;
+    }
+  }
+
+  Future<BaseResponse> resetPass(dynamic data, BuildContext context) async {
+    try {
+      final BaseResponse resetPassResponse = await _myRepo.setPassResponse(data);
+      return resetPassResponse;
+    } catch (error) {
+      if (kDebugMode) {
+        Utils.flushBarErrorMessage(error.toString(), context);
+        print(error.toString());
+      }
+      // Handle the error and return null or throw it again
+      rethrow;
+    }
   }
 }

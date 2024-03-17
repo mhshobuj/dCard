@@ -16,5 +16,7 @@ class AppUrl {
   static var cardActive = '${baseUrl}nfccards/activate/otp/';
   static var collectionHistory = '${baseUrl}paymentservice/user/transactions/list';
   static var rewardsList = '${baseUrl}nfccards/card/redeem/list/';
+  static var verifyForForgotPass = '${baseUrl}auth/user/forgot/password/';
+  static var resetPass = '${baseUrl}auth/user/forgot/password/set/';
 
 }

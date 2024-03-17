@@ -1,6 +1,8 @@
 import 'package:flutter/material.dart';
+import 'package:provider/provider.dart';
 import '../../utils/routes/routes_name.dart';
 import '../../utils/utils.dart';
+import '../../view_model/login_view_model.dart';
 
 class MoreScreen extends StatelessWidget {
   const MoreScreen({Key? key}) : super(key: key);
@@ -8,6 +10,7 @@ class MoreScreen extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     final int currentYear = DateTime.now().year;
+    final tokenViewModel = Provider.of<TokenViewModel>(context, listen: false);
     return Scaffold(
       body: ListView(
         padding: const EdgeInsets.symmetric(vertical: 20),
@@ -67,7 +70,7 @@ class MoreScreen extends StatelessWidget {
             Utils.flushBarErrorMessage("Under Development", context);
           }),
           _buildListItem(context, 'Logout', Icons.logout, () {
-            _logout(context);
+            _logout(context, tokenViewModel);
           }),
           const SizedBox(height: 20),
           // Copyright notice
@@ -103,10 +106,11 @@ class MoreScreen extends StatelessWidget {
     );
   }
 
-  void _logout(BuildContext context) {
+  void _logout(BuildContext context, TokenViewModel tokenViewModel) {
     // Implement your logout logic here
     // For example, you can clear user authentication token, navigate to login screen, etc.
     // Once logged out, navigate to the login screen
+    tokenViewModel.remove();
     Navigator.pushNamedAndRemoveUntil(context, RoutesName.login, (route) => false);
   }
 }

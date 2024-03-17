@@ -6,6 +6,8 @@ import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
 
+import 'forgot_password_dialog.dart';
+
 class LoginScreen extends StatefulWidget {
   const LoginScreen({super.key});
 
@@ -43,11 +45,6 @@ class _LoginScreenState extends State<LoginScreen> {
 
     final height = MediaQuery.of(context).size.height * 1;
     return Scaffold(
-      /*appBar: AppBar(
-        backgroundColor: AppColors.backgroundColor,
-        title: const Text('Login'),
-        centerTitle: true,
-      ),*/
       body: SafeArea(
         child: Column(
           mainAxisAlignment: MainAxisAlignment.center,
@@ -105,7 +102,29 @@ class _LoginScreenState extends State<LoginScreen> {
                 ),
               ),
             ),
-            SizedBox(height: height * 0.085),
+            // Forgot Password button
+            Align(
+              alignment: Alignment.centerRight,
+              child: InkWell(
+                onTap: () {
+                  // Add your logic for forgot password here
+                  showDialog(
+                    context: context,
+                    builder: (BuildContext context) {
+                      return ForgotPasswordDialog();
+                    },
+                  );
+                },
+                child: const Padding(
+                  padding: EdgeInsets.all(10.0),
+                  child: Text(
+                    "Forgot Password?",
+                    style: TextStyle(color: Colors.redAccent),
+                  ),
+                ),
+              ),
+            ),
+            SizedBox(height: height * 0.075),
             RoundButton(
               title: "Login",
               loading: authViewMode.loginLoading,
