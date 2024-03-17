@@ -6,6 +6,7 @@ abstract class BaseApiServices{
   Future<dynamic> getGetTokenApiResponseWithMultipleQuery(String url, String token, String query1,String query2);
   Future<dynamic> getPostApiResponse(String url, dynamic data);
   Future<dynamic> getPostTokenApiResponse(String url, String token, dynamic data);
+  Future<dynamic> getPostTokenNoBodyApiResponse(String url, String token);
   Future<dynamic> getGetApiResponse(String url);
 
 }

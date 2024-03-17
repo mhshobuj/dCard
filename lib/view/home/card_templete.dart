@@ -5,8 +5,10 @@ import '../../model/get_card_model.dart';
 import '../../res/color.dart';
 import '../../res/components/otp_popup.dart';
 import '../../utils/routes/routes_name.dart';
+import '../../view_model/area_list_view_model.dart';
 import '../../view_model/home_view_model.dart';
 import '../../view_model/login_view_model.dart';
+import '../apply/card_fee_payment_screen.dart';
 import 'card_number_input_dialog.dart';
 
 class CardTemplate extends StatefulWidget {
@@ -22,6 +24,9 @@ class CardTemplate extends StatefulWidget {
 }
 
 class _CardTemplateState extends State<CardTemplate> {
+
+  bool isButtonLoading = false;
+
   @override
   Widget build(BuildContext context) {
     ValueNotifier<bool> isVerifiedNotifier = ValueNotifier(false);
@@ -148,24 +153,53 @@ class _CardTemplateState extends State<CardTemplate> {
               child: SizedBox(
                 height: 40, // Set your desired margin height
                 child: ElevatedButton(
-                  onPressed: isLoading ? null : () async {
-                    /*final cardNumber = await showCreditCardDialog(context);
-                    if (cardNumber != null) {
+                  onPressed: isButtonLoading
+                      ? null
+                      : () {
+                    setState(() {
+                      isButtonLoading = true; // Start button loading
+                    });
+                    againOnlineFee(() {
                       setState(() {
-                        isLoading = true; // Start loading
+                        isButtonLoading = false; // Stop button loading
                       });
-                      await checkCard(context, cardNumber, isVerifiedNotifier);
-                    }*/
+                    }); // Call your API function with a callback
                   },
                   style: ElevatedButton.styleFrom(
-                    primary: AppColors.buttonColor,
+                    primary: isButtonLoading ? Colors.grey : AppColors.buttonColor, // Change button color when loading
                     shape: RoundedRectangleBorder(
                       borderRadius: BorderRadius.circular(6.0), // Adjust as needed
                     ),
                   ),
-                  child: const Text(
-                    'Pay Now',
-                    style: TextStyle(fontSize: 16, fontWeight: FontWeight.bold), // Adjust as needed
+                  child: Stack(
+                    alignment: Alignment.center,
+                    children: [
+                      // Loading indicator (conditionally shown)
+                      if (isButtonLoading)
+                        Container(
+                          decoration: BoxDecoration(
+                            color: AppColors.buttonColor, // Adjust the background color and opacity as needed
+                            borderRadius: BorderRadius.circular(20), // Adjust the border radius as needed
+                          ),
+                          width: 40,
+                          height: 40,
+                          child: const Center(
+                            child: SizedBox(
+                              height: 20,
+                              width: 20,
+                              child: CircularProgressIndicator(
+                                strokeWidth: 2,
+                                valueColor: AlwaysStoppedAnimation<Color>(Colors.white),
+                              ),
+                            ),
+                          ),
+                        ),
+                      // Text (conditionally hidden)
+                      Text(
+                        isButtonLoading ? '' : 'Pay Now',
+                        style: const TextStyle(fontSize: 16, fontWeight: FontWeight.bold), // Adjust as needed
+                      ),
+                    ],
                   ),
                 ),
               ),
@@ -320,4 +354,41 @@ class _CardTemplateState extends State<CardTemplate> {
       // Handle error here
     });
   }
+
+  void againOnlineFee(Function callback) {
+    final areaViewModel = Provider.of<AreaViewModel>(context, listen: false);
+    final tokenViewModel = Provider.of<TokenViewModel>(context, listen: false);
+
+    setState(() {
+      isButtonLoading = true; // Start button loading
+    });
+
+    tokenViewModel.getToken().then((loginModel) {
+      final token = loginModel.token;
+      areaViewModel.againOnlineFee(context, token!).then((againFeePaymentResponse) {
+        if (againFeePaymentResponse.statusCode == 200) {
+          if (kDebugMode) {
+            print(againFeePaymentResponse.data.sslresponse.data.redirectGatewayURL);
+          }
+          String url = againFeePaymentResponse.data.sslresponse.data.redirectGatewayURL;
+          Navigator.push(context, MaterialPageRoute(builder: (context) => CardFeePayment(url: url),),);
+        }
+        // Move the callback inside the then block
+        callback(); // Invoke the callback to signal the completion
+      }).catchError((error) {
+        if (kDebugMode) {
+          print(error);
+        }
+        // Handle error here
+        callback(); // Invoke the callback to signal the completion
+      });
+    }).catchError((error) {
+      if (kDebugMode) {
+        print(error);
+      }
+      // Handle error here
+      callback(); // Invoke the callback to signal the completion
+    });
+  }
+
 }

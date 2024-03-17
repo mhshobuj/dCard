@@ -105,4 +105,22 @@ class AreaViewModel with ChangeNotifier {
       throw error;
     }
   }
+
+  Future<CardRequestResponse> againOnlineFee(BuildContext context, String token) async {
+    setUpdateLoading(true);
+    try {
+      final CardRequestResponse cardRequestResponseOnlineFee = await _myRepo.againOnlineFee(token);
+      setUpdateLoading(false);
+
+      return cardRequestResponseOnlineFee; // Return the cardResponse
+    } catch (error) {
+      setUpdateLoading(false);
+      if (kDebugMode) {
+        //Utils.flushBarErrorMessage(error.toString(), context);
+        print(error.toString());
+      }
+      // Handle the error and return null or throw it again
+      throw error;
+    }
+  }
 }

@@ -366,8 +366,7 @@ class _ApplyCardScreenState extends State<ApplyCardScreen> {
     });
   }
 
-  void applyCardOnlineFee(TokenViewModel tokenViewModel,
-      AreaViewModel areaViewModel, Map<String, String> data) {
+  void applyCardOnlineFee(TokenViewModel tokenViewModel, AreaViewModel areaViewModel, Map<String, String> data) {
     tokenViewModel.getToken().then((loginModel) {
       final token = loginModel.token;
       areaViewModel

@@ -45,4 +45,13 @@ class AreaRepository {
       rethrow;
     }
   }
+
+  Future<CardRequestResponse> againOnlineFee(String token)async {
+    try{
+      dynamic response = await _apiServices.getPostTokenNoBodyApiResponse(AppUrl.againOnlinePay, token);
+      return CardRequestResponse.fromJson(response);
+    }catch(e){
+      rethrow;
+    }
+  }
 }
