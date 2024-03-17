@@ -3,6 +3,10 @@ import 'package:flutter/material.dart';
 import '../../res/color.dart';
 
 class CreditCardNumberDialog extends StatefulWidget {
+  final Function onPressed;
+
+  CreditCardNumberDialog({required this.onPressed});
+
   @override
   _CreditCardNumberDialogState createState() => _CreditCardNumberDialogState();
 }
@@ -10,13 +14,14 @@ class CreditCardNumberDialog extends StatefulWidget {
 class _CreditCardNumberDialogState extends State<CreditCardNumberDialog> {
   final _formKey = GlobalKey<FormState>();
   String _cardNumber = ''; // No pre-filled value
+  bool _isLoading = false; // Loading indicator flag
 
   @override
   Widget build(BuildContext context) {
     return AlertDialog(
       title: const Text(
         'Enter Your 16-digit Card Number',
-        style: TextStyle(fontSize: 18, fontWeight: FontWeight.bold), // Adjust as needed
+        style: TextStyle(fontSize: 18, fontWeight: FontWeight.bold),
       ),
       content: Form(
         key: _formKey,
@@ -24,11 +29,11 @@ class _CreditCardNumberDialogState extends State<CreditCardNumberDialog> {
           mainAxisSize: MainAxisSize.min,
           children: [
             TextFormField(
-              maxLength: 16, // Adjusted to account for spaces
+              maxLength: 16,
               keyboardType: TextInputType.number,
               style: const TextStyle(fontSize: 16),
               decoration: InputDecoration(
-                hintText: 'XXXX XXXX XXXX XXXX', // Pre-formatted hint with spaces
+                hintText: 'XXXX XXXX XXXX XXXX',
                 counterText: '', // Hide character counter
                 contentPadding: EdgeInsets.symmetric(vertical: 15, horizontal: 10),
                 enabledBorder: OutlineInputBorder(
@@ -38,10 +43,9 @@ class _CreditCardNumberDialogState extends State<CreditCardNumberDialog> {
                 focusedBorder: OutlineInputBorder(
                   borderRadius: BorderRadius.circular(8.0),
                   borderSide: BorderSide(color: Theme.of(context).primaryColor!),
-                ), // Set border color on focus
+                ),
               ),
               validator: (value) {
-                // Remove spaces before validation
                 final noSpaces = value!.replaceAll(' ', '');
                 if (noSpaces.length != 16) {
                   return 'Please enter a valid 16-digit card number.';
@@ -50,16 +54,11 @@ class _CreditCardNumberDialogState extends State<CreditCardNumberDialog> {
               },
               onChanged: (value) {
                 setState(() {
-                  // Remove spaces before formatting to avoid extra spaces
-                  _cardNumber = value.replaceAll('','');
-
-                  // Format with spaces using a regular expression
+                  _cardNumber = value.replaceAll(' ', '');
                   final formatted = _cardNumber.replaceAllMapped(
                     RegExp(r'.{4}'),
                         (match) => '${match.group(0)} ',
                   );
-
-                  // Remove any trailing space to ensure correct length
                   _cardNumber = formatted.trim();
                 });
               },
@@ -72,24 +71,66 @@ class _CreditCardNumberDialogState extends State<CreditCardNumberDialog> {
                   onPressed: () => Navigator.of(context).pop(),
                   child: const Text(
                     'Cancel',
-                    style: TextStyle(fontSize: 16), // Adjust as needed
+                    style: TextStyle(fontSize: 16),
                   ),
                 ),
                 ElevatedButton(
-                  onPressed: () {
+                  onPressed: _isLoading
+                      ? null
+                      : () async {
+                    // Dismiss the keyboard
+                    FocusScope.of(context).unfocus();
                     if (_formKey.currentState!.validate()) {
-                      Navigator.of(context).pop(_cardNumber);
+                      setState(() {
+                        _isLoading = true; // Start loading indicator
+                      });
+                      // Call the onPressed callback passed from the parent widget
+                      await widget.onPressed(_cardNumber);
+                      // No need to setState here, as we want the loading indicator to persist until the callback is completed
                     }
                   },
                   style: ElevatedButton.styleFrom(
-                    primary: AppColors.buttonColor,
+                    primary: _isLoading ? Colors.transparent : AppColors.buttonColor, // Change button color to transparent when isLoading is true
                     shape: RoundedRectangleBorder(
-                      borderRadius: BorderRadius.circular(10.0), // Adjust as needed
+                      borderRadius: BorderRadius.circular(10.0),
                     ),
                   ),
-                  child: const Text(
-                    'Activate',
-                    style: TextStyle(fontSize: 16, fontWeight: FontWeight.bold), // Adjust as needed
+                  child: Stack(
+                    alignment: Alignment.center,
+                    children: [
+                      // Loading indicator (conditionally shown)
+                      if (_isLoading)
+                        Container(
+                          decoration: BoxDecoration(
+                            color: Colors.transparent, // Set background color to transparent when isLoading is true
+                            borderRadius: BorderRadius.circular(20), // Adjust the border radius as needed
+                          ),
+                          width: 40,
+                          height: 40,
+                          child: const Center(
+                            child: SizedBox(
+                              height: 20,
+                              width: 20,
+                              child: CircularProgressIndicator(
+                                strokeWidth: 2,
+                                valueColor: AlwaysStoppedAnimation<Color>(AppColors.buttonColor),
+                              ),
+                            ),
+                          ),
+                        ),
+                      // Text (conditionally hidden)
+                      Opacity(
+                        opacity: _isLoading ? 0.0 : 1.0, // Hide text when isLoading is true
+                        child: const Text(
+                          'Activate',
+                          style: TextStyle(
+                            fontSize: 16,
+                            fontWeight: FontWeight.bold,
+                            color: Colors.white,
+                          ),
+                        ),
+                      ),
+                    ],
                   ),
                 ),
               ],

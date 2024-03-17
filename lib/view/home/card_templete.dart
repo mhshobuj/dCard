@@ -5,6 +5,7 @@ import '../../model/get_card_model.dart';
 import '../../res/color.dart';
 import '../../res/components/otp_popup.dart';
 import '../../utils/routes/routes_name.dart';
+import '../../utils/utils.dart';
 import '../../view_model/area_list_view_model.dart';
 import '../../view_model/home_view_model.dart';
 import '../../view_model/login_view_model.dart';
@@ -127,13 +128,25 @@ class _CardTemplateState extends State<CardTemplate> {
                 height: 40, // Set your desired margin height
                 child: ElevatedButton(
                   onPressed: isLoading ? null : () async {
-                    final cardNumber = await showCreditCardDialog(context);
-                    if (cardNumber != null) {
-                      setState(() {
-                        isLoading = true; // Start loading
-                      });
-                      await checkCard(context, cardNumber, isVerifiedNotifier);
-                    }
+                    showDialog(
+                      context: context,
+                      builder: (context) => CreditCardNumberDialog(
+                        onPressed: (cardNumber) async {
+                          setState(() {
+                            isLoading = true; // Start loading
+                          });
+                          String trimmedCardNumber = cardNumber.replaceAll(' ', '');
+                          if (kDebugMode) {
+                            print(trimmedCardNumber);
+                          }
+                          // Perform your card verification process here
+                          await checkCard(context, trimmedCardNumber, isVerifiedNotifier);
+                          setState(() {
+                            isLoading = false; // Stop loading
+                          });
+                        },
+                      ),
+                    );
                   },
                   style: ElevatedButton.styleFrom(
                     primary: AppColors.buttonColor,
@@ -146,6 +159,7 @@ class _CardTemplateState extends State<CardTemplate> {
                     style: TextStyle(fontSize: 16, fontWeight: FontWeight.bold), // Adjust as needed
                   ),
                 ),
+
               ),
             ),
           if(widget.getCardResponse?.data?.request?.status == 'FEE_UNPAID')
@@ -248,13 +262,6 @@ class _CardTemplateState extends State<CardTemplate> {
     );
   }
 
-  Future<String?> showCreditCardDialog(BuildContext context) async {
-    return await showDialog(
-      context: context,
-      builder: (context) => CreditCardNumberDialog(),
-    );
-  }
-
   checkCard(BuildContext context, String value, ValueNotifier<bool> isVerifiedNotifier) {
     final homeViewModel = Provider.of<HomeViewModel>(context, listen: false);
     final tokenViewModel = Provider.of<TokenViewModel>(context, listen: false);
@@ -305,7 +312,12 @@ class _CardTemplateState extends State<CardTemplate> {
                 if (kDebugMode) {
                   print('active $otp');
                 }
-                await activeCard(context, tokenViewModel, homeViewModel, cardSku, otp);
+                if(otp.isNotEmpty) {
+                  await activeCard(
+                      context, tokenViewModel, homeViewModel, cardSku, otp);
+                }else{
+                  Utils.flushBarErrorMessage("Please Input the OTP", context);
+                }
               },
             ),
           );
