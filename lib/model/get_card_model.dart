@@ -5,7 +5,8 @@ class GetCardModel {
   bool? hasCard;
   Data? data;
 
-  GetCardModel({this.success, this.statusCode, this.message, this.hasCard, this.data});
+  GetCardModel(
+      {this.success, this.statusCode, this.message, this.hasCard, this.data});
 
   GetCardModel.fromJson(Map<String, dynamic> json) {
     success = json['success'];
@@ -33,6 +34,8 @@ class Data {
   String? status;
   String? provider;
   String? userName;
+  String? cardName;
+  String? cvc;
   String? expiresAt;
   String? activeImage;
   String? inactiveImage;
@@ -44,6 +47,8 @@ class Data {
         this.status,
         this.provider,
         this.userName,
+        this.cardName,
+        this.cvc,
         this.expiresAt,
         this.activeImage,
         this.inactiveImage,
@@ -55,6 +60,8 @@ class Data {
     status = json['status'];
     provider = json['provider'];
     userName = json['user_name'];
+    cardName = json['card_name'];
+    cvc = json['cvc'];
     expiresAt = json['expires_at'];
     activeImage = json['active_image'];
     inactiveImage = json['inactive_image'];
@@ -69,6 +76,8 @@ class Data {
     data['status'] = this.status;
     data['provider'] = this.provider;
     data['user_name'] = this.userName;
+    data['card_name'] = this.cardName;
+    data['cvc'] = this.cvc;
     data['expires_at'] = this.expiresAt;
     data['active_image'] = this.activeImage;
     data['inactive_image'] = this.inactiveImage;

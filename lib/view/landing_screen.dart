@@ -28,11 +28,11 @@ class _LandingPageState extends State<LandingPage> {
     return Scaffold(
       body: _widgetOptions.elementAt(_selectedIndex),
       bottomNavigationBar: Container(
-        margin: EdgeInsets.only(left: 20, right: 20, bottom: 20), // Add margin to the bottom
+        margin: const EdgeInsets.only(left: 20, right: 20, bottom: 20), // Add margin to the bottom
         decoration: BoxDecoration(
           color: Colors.transparent, // Set the background color to transparent
           borderRadius: BorderRadius.circular(30), // Rounded border radius
-          boxShadow: [
+          boxShadow: const [
             BoxShadow(
               color: Colors.black12,
               blurRadius: 5,

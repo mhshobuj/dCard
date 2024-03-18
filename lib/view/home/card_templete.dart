@@ -32,233 +32,270 @@ class _CardTemplateState extends State<CardTemplate> {
   Widget build(BuildContext context) {
     ValueNotifier<bool> isVerifiedNotifier = ValueNotifier(false);
     bool isLoading = false; // Track loading state
-    return Container(
-      margin: const EdgeInsets.all(5),
-      width: MediaQuery.of(context).size.width - 10,
-      height: MediaQuery.of(context).size.width * 0.6,
-      decoration: BoxDecoration(
-        borderRadius: BorderRadius.circular(10),
-        image: const DecorationImage(
-          image: AssetImage('assets/images/card_template.png'),
-          fit: BoxFit.cover,
-        ),
-      ),
-      child: Stack(
-        children: [
-          if (!(widget.getCardResponse?.hasCard ?? false))
-            Center(
-              child: SizedBox(
-                height: 40, // Set your desired margin height
-                child: ElevatedButton(
-                  onPressed: () {
-                    // Handle Apply Card button press
-                    Navigator.pushNamed(context, RoutesName.apply);
-                  },
-                  style: ElevatedButton.styleFrom(
-                    primary: AppColors.buttonColor,
-                  ),
-                  child: const Text('Apply Card'),
-                ),
-              ),
-            ),
-          if (widget.getCardResponse?.hasCard ?? false)
-            if(widget.getCardResponse?.data?.request?.status == 'PENDING')
-              Container(
-                margin: const EdgeInsets.only(top: 100), // Adjust the top margin as needed
-                child: Center(
-                  child: Column(
-                    mainAxisSize: MainAxisSize.min,
-                    children: const [
-                      Text(
-                        'Your request has been submitted, Please wait for approval.',
-                        textAlign: TextAlign.center,
-                        style: TextStyle(
-                          fontSize: 16,
-                          fontWeight: FontWeight.bold,
-                          color: Colors.white,
-                        ),
-                      ),
-                    ],
-                  ),
-                ),
-              ),
-          if(widget.getCardResponse?.data?.request?.status == 'PRINTING')
-            Container(
-              margin: const EdgeInsets.only(top: 100), // Adjust the top margin as needed
-              child: Center(
-                child: Column(
-                  mainAxisSize: MainAxisSize.min,
-                  children: const [
-                    Text(
-                      'Your loyalty card is in printing queue.',
-                      textAlign: TextAlign.center,
-                      style: TextStyle(
-                        fontSize: 16,
-                        fontWeight: FontWeight.bold,
-                        color: Colors.white,
-                      ),
-                    ),
-                  ],
-                ),
-              ),
-            ),
-          if(widget.getCardResponse?.data?.request?.status == 'PRINTED')
-            Container(
-              margin: const EdgeInsets.only(top: 100), // Adjust the top margin as needed
-              child: Center(
-                child: Column(
-                  mainAxisSize: MainAxisSize.min,
-                  children: const [
-                    Text(
-                      'Your loyalty card has been printed! Please wait for ready to delivery message.',
-                      textAlign: TextAlign.center,
-                      style: TextStyle(
-                        fontSize: 16,
-                        fontWeight: FontWeight.bold,
-                        color: Colors.white,
-                      ),
-                    ),
-                  ],
-                ),
-              ),
-            ),
-          if(widget.getCardResponse?.data?.request?.status == 'IN-DELIVERY')
-            Center(
-              child: SizedBox(
-                height: 40, // Set your desired margin height
-                child: ElevatedButton(
-                  onPressed: isLoading ? null : () async {
-                    showDialog(
-                      context: context,
-                      builder: (context) => CreditCardNumberDialog(
-                        onPressed: (cardNumber) async {
-                          setState(() {
-                            isLoading = true; // Start loading
-                          });
-                          String trimmedCardNumber = cardNumber.replaceAll(' ', '');
-                          if (kDebugMode) {
-                            print(trimmedCardNumber);
-                          }
-                          // Perform your card verification process here
-                          await checkCard(context, trimmedCardNumber, isVerifiedNotifier);
-                          setState(() {
-                            isLoading = false; // Stop loading
-                          });
-                        },
-                      ),
-                    );
-                  },
-                  style: ElevatedButton.styleFrom(
-                    primary: AppColors.buttonColor,
-                    shape: RoundedRectangleBorder(
-                      borderRadius: BorderRadius.circular(6.0), // Adjust as needed
-                    ),
-                  ),
-                  child: const Text(
-                    'Press to Activate',
-                    style: TextStyle(fontSize: 16, fontWeight: FontWeight.bold), // Adjust as needed
-                  ),
-                ),
-
-              ),
-            ),
-          if(widget.getCardResponse?.data?.request?.status == 'FEE_UNPAID')
-            Center(
-              child: SizedBox(
-                height: 40, // Set your desired margin height
-                child: ElevatedButton(
-                  onPressed: isButtonLoading
-                      ? null
-                      : () {
-                    setState(() {
-                      isButtonLoading = true; // Start button loading
-                    });
-                    againOnlineFee(() {
-                      setState(() {
-                        isButtonLoading = false; // Stop button loading
-                      });
-                    }); // Call your API function with a callback
-                  },
-                  style: ElevatedButton.styleFrom(
-                    primary: isButtonLoading ? Colors.grey : AppColors.buttonColor, // Change button color when loading
-                    shape: RoundedRectangleBorder(
-                      borderRadius: BorderRadius.circular(6.0), // Adjust as needed
-                    ),
-                  ),
-                  child: Stack(
-                    alignment: Alignment.center,
-                    children: [
-                      // Loading indicator (conditionally shown)
-                      if (isButtonLoading)
-                        Container(
-                          decoration: BoxDecoration(
-                            color: AppColors.buttonColor, // Adjust the background color and opacity as needed
-                            borderRadius: BorderRadius.circular(20), // Adjust the border radius as needed
-                          ),
-                          width: 40,
-                          height: 40,
-                          child: const Center(
-                            child: SizedBox(
-                              height: 20,
-                              width: 20,
-                              child: CircularProgressIndicator(
-                                strokeWidth: 2,
-                                valueColor: AlwaysStoppedAnimation<Color>(Colors.white),
-                              ),
-                            ),
-                          ),
-                        ),
-                      // Text (conditionally hidden)
-                      Text(
-                        isButtonLoading ? '' : 'Pay Now',
-                        style: const TextStyle(fontSize: 16, fontWeight: FontWeight.bold), // Adjust as needed
-                      ),
-                    ],
-                  ),
-                ),
-              ),
-            ),
-          if(widget.getCardResponse?.data?.request?.status == 'ACTIVE')
-          Positioned(
-            bottom: 20,
-            left: 20,
-            child: Column(
-              crossAxisAlignment: CrossAxisAlignment.start,
-              children: [
-                ShaderMask(
-                  shaderCallback: (Rect bounds) {
-                    return const LinearGradient(
-                      colors: [
-                        Colors.yellowAccent,
-                        Colors.redAccent,
-                        Colors.yellow,
-                      ],
-                    ).createShader(bounds);
-                  },
-                  child: Text(
-                    widget.getCardResponse?.data?.cardNumber?.replaceAllMapped(
-                        RegExp(r'.{4}'), (match) => '${match.group(0)} ') ?? '',
-                    style: const TextStyle(
-                      color: Colors.white,
-                      fontSize: 30,
-                      fontWeight: FontWeight.bold,
-                    ),
-                  ),
-                ),
-                const SizedBox(height: 6),
-                Text(
-                  widget.getCardResponse?.data?.userName?.toUpperCase() ?? '',
-                  style: const TextStyle(
-                    color: Colors.white,
-                    fontSize: 24,
-                    fontWeight: FontWeight.bold,
-                  ),
-                ),
-              ],
+    return Column(
+      crossAxisAlignment: CrossAxisAlignment.end,
+      children: [
+        Container(
+          margin: const EdgeInsets.all(5),
+          width: MediaQuery.of(context).size.width - 10,
+          height: MediaQuery.of(context).size.width * 0.6,
+          decoration: BoxDecoration(
+            borderRadius: BorderRadius.circular(10),
+            image: const DecorationImage(
+              image: AssetImage('assets/images/card_template.png'),
+              fit: BoxFit.cover,
             ),
           ),
-        ],
-      ),
+          child: Stack(
+            children: [
+              if (!(widget.getCardResponse?.hasCard ?? false))
+                Center(
+                  child: SizedBox(
+                    height: 40, // Set your desired margin height
+                    child: ElevatedButton(
+                      onPressed: () {
+                        // Handle Apply Card button press
+                        Navigator.pushNamed(context, RoutesName.apply);
+                      },
+                      style: ElevatedButton.styleFrom(
+                        primary: AppColors.buttonColor,
+                      ),
+                      child: const Text('Apply Card'),
+                    ),
+                  ),
+                ),
+              if (widget.getCardResponse?.hasCard ?? false)
+                if(widget.getCardResponse?.data?.request?.status == 'PENDING')
+                  Container(
+                    margin: const EdgeInsets.only(top: 100), // Adjust the top margin as needed
+                    child: Center(
+                      child: Column(
+                        mainAxisSize: MainAxisSize.min,
+                        children: const [
+                          Text(
+                            'Your request has been submitted, Please wait for approval.',
+                            textAlign: TextAlign.center,
+                            style: TextStyle(
+                              fontSize: 16,
+                              fontWeight: FontWeight.bold,
+                              color: Colors.white,
+                            ),
+                          ),
+                        ],
+                      ),
+                    ),
+                  ),
+              if(widget.getCardResponse?.data?.request?.status == 'PRINTING')
+                Container(
+                  margin: const EdgeInsets.only(top: 100), // Adjust the top margin as needed
+                  child: Center(
+                    child: Column(
+                      mainAxisSize: MainAxisSize.min,
+                      children: const [
+                        Text(
+                          'Your loyalty card is in printing queue.',
+                          textAlign: TextAlign.center,
+                          style: TextStyle(
+                            fontSize: 16,
+                            fontWeight: FontWeight.bold,
+                            color: Colors.white,
+                          ),
+                        ),
+                      ],
+                    ),
+                  ),
+                ),
+              if(widget.getCardResponse?.data?.request?.status == 'PRINTED')
+                Container(
+                  margin: const EdgeInsets.only(top: 100), // Adjust the top margin as needed
+                  child: Center(
+                    child: Column(
+                      mainAxisSize: MainAxisSize.min,
+                      children: const [
+                        Text(
+                          'Your loyalty card has been printed! Please wait for ready to delivery message.',
+                          textAlign: TextAlign.center,
+                          style: TextStyle(
+                            fontSize: 16,
+                            fontWeight: FontWeight.bold,
+                            color: Colors.white,
+                          ),
+                        ),
+                      ],
+                    ),
+                  ),
+                ),
+              if(widget.getCardResponse?.data?.request?.status == 'IN-DELIVERY')
+                Center(
+                  child: SizedBox(
+                    height: 40, // Set your desired margin height
+                    child: ElevatedButton(
+                      onPressed: isLoading ? null : () async {
+                        showDialog(
+                          context: context,
+                          builder: (context) => CreditCardNumberDialog(
+                            onPressed: (cardNumber) async {
+                              setState(() {
+                                isLoading = true; // Start loading
+                              });
+                              String trimmedCardNumber = cardNumber.replaceAll(' ', '');
+                              if (kDebugMode) {
+                                print(trimmedCardNumber);
+                              }
+                              // Perform your card verification process here
+                              await checkCard(context, trimmedCardNumber, isVerifiedNotifier);
+                              setState(() {
+                                isLoading = false; // Stop loading
+                              });
+                            },
+                          ),
+                        );
+                      },
+                      style: ElevatedButton.styleFrom(
+                        primary: AppColors.buttonColor,
+                        shape: RoundedRectangleBorder(
+                          borderRadius: BorderRadius.circular(6.0), // Adjust as needed
+                        ),
+                      ),
+                      child: const Text(
+                        'Press to Activate',
+                        style: TextStyle(fontSize: 16, fontWeight: FontWeight.bold), // Adjust as needed
+                      ),
+                    ),
+
+                  ),
+                ),
+              if(widget.getCardResponse?.data?.request?.status == 'FEE_UNPAID')
+                Center(
+                  child: SizedBox(
+                    height: 40, // Set your desired margin height
+                    child: ElevatedButton(
+                      onPressed: isButtonLoading
+                          ? null
+                          : () {
+                        setState(() {
+                          isButtonLoading = true; // Start button loading
+                        });
+                        againOnlineFee(() {
+                          setState(() {
+                            isButtonLoading = false; // Stop button loading
+                          });
+                        }); // Call your API function with a callback
+                      },
+                      style: ElevatedButton.styleFrom(
+                        primary: isButtonLoading ? Colors.grey : AppColors.buttonColor, // Change button color when loading
+                        shape: RoundedRectangleBorder(
+                          borderRadius: BorderRadius.circular(6.0), // Adjust as needed
+                        ),
+                      ),
+                      child: Stack(
+                        alignment: Alignment.center,
+                        children: [
+                          // Loading indicator (conditionally shown)
+                          if (isButtonLoading)
+                            Container(
+                              decoration: BoxDecoration(
+                                color: AppColors.buttonColor, // Adjust the background color and opacity as needed
+                                borderRadius: BorderRadius.circular(20), // Adjust the border radius as needed
+                              ),
+                              width: 40,
+                              height: 40,
+                              child: const Center(
+                                child: SizedBox(
+                                  height: 20,
+                                  width: 20,
+                                  child: CircularProgressIndicator(
+                                    strokeWidth: 2,
+                                    valueColor: AlwaysStoppedAnimation<Color>(Colors.white),
+                                  ),
+                                ),
+                              ),
+                            ),
+                          // Text (conditionally hidden)
+                          Text(
+                            isButtonLoading ? '' : 'Pay Now',
+                            style: const TextStyle(fontSize: 16, fontWeight: FontWeight.bold), // Adjust as needed
+                          ),
+                        ],
+                      ),
+                    ),
+                  ),
+                ),
+              if(widget.getCardResponse?.data?.request?.status == 'ACTIVE')
+                Positioned(
+                  bottom: 20,
+                  left: 20,
+                  child: Column(
+                    crossAxisAlignment: CrossAxisAlignment.start,
+                    children: [
+                      ShaderMask(
+                        shaderCallback: (Rect bounds) {
+                          return const LinearGradient(
+                            colors: [
+                              Colors.yellowAccent,
+                              Colors.redAccent,
+                              Colors.yellow,
+                            ],
+                          ).createShader(bounds);
+                        },
+                        child: Text(
+                          widget.getCardResponse?.data?.cardNumber?.replaceAllMapped(
+                              RegExp(r'.{4}'), (match) => '${match.group(0)} ') ?? '',
+                          style: const TextStyle(
+                            color: Colors.white,
+                            fontSize: 30,
+                            fontWeight: FontWeight.bold,
+                          ),
+                        ),
+                      ),
+                      const SizedBox(height: 6),
+                      Text(
+                        widget.getCardResponse?.data?.cardName?.toUpperCase() ?? '',
+                        style: const TextStyle(
+                          color: Colors.white,
+                          fontSize: 24,
+                          fontWeight: FontWeight.bold,
+                        ),
+                      ),
+                    ],
+                  ),
+                ),
+            ],
+          ),
+        ),
+        GestureDetector(
+          onTap: () {
+            Navigator.pushNamed(context, RoutesName.details);
+          },
+          child: Row(
+            mainAxisAlignment: MainAxisAlignment.end,
+            children: [
+              Expanded(
+                child: Row(
+                  mainAxisAlignment: MainAxisAlignment.end,
+                  children: [
+                    Padding(
+                      padding: const EdgeInsets.only(left: 16.0, top: 16.0),
+                      child: Image.asset(
+                        'assets/images/details.png', // Path to your image asset
+                        width: 25, // Adjust width as needed
+                        height: 25, // Adjust height as needed
+                      ),
+                    ),
+                    const Padding(
+                      padding: EdgeInsets.only(right: 10.0, top: 15.0),
+                      child: Text(
+                        'CARD DETAILS',
+                        style: TextStyle(fontSize: 12, fontWeight: FontWeight.bold),
+                      ),
+                    ),
+                  ],
+                ),
+              ),
+            ],
+          ),
+        ),
+      ],
     );
   }
 

@@ -23,4 +23,7 @@ class RoutesName{
 
   //apply routes name
   static const String apply = "card_apply_screen";
+
+  //card details name
+  static const String details = "card_details";
 }
