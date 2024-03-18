@@ -6,7 +6,9 @@ import 'package:dma_card/view/auth/login_screen.dart';
 import 'package:dma_card/view/auth/signup_screen.dart';
 import 'package:dma_card/view/auth/splash_view.dart';
 import 'package:dma_card/view/landing_screen.dart';
+import 'package:dma_card/view/more/faq_screen.dart';
 import 'package:dma_card/view/more/more_screen.dart';
+import 'package:dma_card/view/more/support_page.dart';
 import 'package:dma_card/view/rewards/rewards_screen.dart';
 import 'package:flutter/material.dart';
 
@@ -31,6 +33,10 @@ class Routes {
         return MaterialPageRoute(builder: (BuildContext context) => const LoginScreen());
       case RoutesName.signUp:
         return MaterialPageRoute(builder: (BuildContext context) => const SignUpScreen());
+      case RoutesName.faq:
+        return MaterialPageRoute(builder: (BuildContext context) => const FAQPage());
+      case RoutesName.support:
+        return MaterialPageRoute(builder: (BuildContext context) => SupportPage());
       default:
         return MaterialPageRoute(builder: (_){
           return const Scaffold(

@@ -26,4 +26,10 @@ class RoutesName{
 
   //card details name
   static const String details = "card_details";
+
+  //faq screen name
+  static const String faq = "faq_screen";
+
+  //support screen name
+  static const String support = "support_page";
 }
