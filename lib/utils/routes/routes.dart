@@ -6,6 +6,7 @@ import 'package:dma_card/view/auth/login_screen.dart';
 import 'package:dma_card/view/auth/signup_screen.dart';
 import 'package:dma_card/view/auth/splash_view.dart';
 import 'package:dma_card/view/landing_screen.dart';
+import 'package:dma_card/view/more/about_screen.dart';
 import 'package:dma_card/view/more/faq_screen.dart';
 import 'package:dma_card/view/more/more_screen.dart';
 import 'package:dma_card/view/more/support_page.dart';
@@ -37,6 +38,8 @@ class Routes {
         return MaterialPageRoute(builder: (BuildContext context) => const FAQPage());
       case RoutesName.support:
         return MaterialPageRoute(builder: (BuildContext context) => SupportPage());
+      case RoutesName.about:
+        return MaterialPageRoute(builder: (BuildContext context) => AboutPage());
       default:
         return MaterialPageRoute(builder: (_){
           return const Scaffold(

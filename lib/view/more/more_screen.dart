@@ -90,7 +90,7 @@ class _MoreScreenState extends State<MoreScreen> {
                   Navigator.pushNamed(context, RoutesName.support);
                 }),
                 _buildListItem(context, 'About', Icons.info_outline, () {
-                  Utils.flushBarErrorMessage("Under Development", context);
+                  Navigator.pushNamed(context, RoutesName.about);
                 }),
                 _buildListItem(
                     context, 'Change Password', Icons.security_outlined, () {

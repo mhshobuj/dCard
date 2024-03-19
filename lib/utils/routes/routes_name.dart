@@ -32,4 +32,7 @@ class RoutesName{
 
   //support screen name
   static const String support = "support_page";
+
+  //about screen name
+  static const String about = "about_screen";
 }
