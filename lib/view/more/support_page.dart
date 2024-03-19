@@ -4,7 +4,7 @@ import 'package:url_launcher/url_launcher.dart';
 import '../../res/color.dart';
 
 class SupportPage extends StatelessWidget {
-  final String phoneNumber = '+880 1981-811552';
+  final String phoneNumber = '01981811552';
   final String emailAddress = 'info@dma-bd.com';
 
   @override
@@ -80,7 +80,7 @@ class SupportPage extends StatelessWidget {
       icon: Icon(icon),
       label: Text(text),
       style: ElevatedButton.styleFrom(
-        padding: EdgeInsets.symmetric(vertical: 16),
+        padding: const EdgeInsets.symmetric(vertical: 16),
         shape: RoundedRectangleBorder(
           borderRadius: BorderRadius.circular(8),
         ),
@@ -90,24 +90,28 @@ class SupportPage extends StatelessWidget {
 
   Future<void> _callPhoneNumber(String phoneNumber) async {
      // Create a tel URL with the phone number
-    final url = Uri.parse('tel:$phoneNumber');
-    if (await canLaunchUrl(url)) {
-      launchUrl(url);
-    } else {
-      throw 'Could not launch $url';
-    }
+    final url = Uri(scheme: 'tel',path: phoneNumber);
+    launchUrl(url);
+
+    //for direct call
+    /*String number = phoneNumber;
+    await FlutterPhoneDirectCaller.callNumber(number);*/
   }
 
   Future<void> _sendEmail(String emailAddress) async {
-    final email = Uri(
+    String? encodeQueryParameters(Map<String, String> params) {
+      return params.entries
+          .map((MapEntry<String, String> e) =>
+      '${Uri.encodeComponent(e.key)}=${Uri.encodeComponent(e.value)}')
+          .join('&');
+    }
+    final Uri emailLaunchUri = Uri(
       scheme: 'mailto',
       path: emailAddress,
-      query: 'subject=Hello&body=Test',
+      query: encodeQueryParameters(<String, String>{
+        'subject': 'Massage for dCard Flutter app',
+      }),
     );
-    if (await canLaunchUrl(email)) {
-      launchUrl(email);
-    } else {
-      throw 'Could not launch $email';
-    }
+    launchUrl(emailLaunchUri);
   }
 }
