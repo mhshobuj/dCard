@@ -140,4 +140,18 @@ class AuthViewModel with ChangeNotifier{
       rethrow;
     }
   }
+
+  Future<BaseResponse> changePass(String token, dynamic data, BuildContext context) async {
+    try {
+      final BaseResponse changePassResponse = await _myRepo.changePassResponse(token, data);
+      return changePassResponse;
+    } catch (error) {
+      if (kDebugMode) {
+        Utils.flushBarErrorMessage(error.toString(), context);
+        print(error.toString());
+      }
+      // Handle the error and return null or throw it again
+      rethrow;
+    }
+  }
 }

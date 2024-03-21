@@ -1,8 +1,10 @@
 import 'package:dma_card/model/user_details_response.dart';
+import 'package:dma_card/view/more/change_password_dialog.dart';
 import 'package:dma_card/view_model/more_view_model.dart';
 import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
+import '../../res/color.dart';
 import '../../utils/routes/routes_name.dart';
 import '../../utils/utils.dart';
 import '../../view_model/login_view_model.dart';
@@ -92,9 +94,8 @@ class _MoreScreenState extends State<MoreScreen> {
                 _buildListItem(context, 'About', Icons.info_outline, () {
                   Navigator.pushNamed(context, RoutesName.about);
                 }),
-                _buildListItem(
+                _buildListItemChangePass(
                     context, 'Change Password', Icons.security_outlined, () {
-                  Utils.flushBarErrorMessage("Under Development", context);
                 }),
                 _buildListItem(context, 'Logout', Icons.logout, () {
                   _logout(context, tokenViewModel);
@@ -113,6 +114,85 @@ class _MoreScreenState extends State<MoreScreen> {
             ),
     );
   }
+
+  void _showChangePasswordDialog(BuildContext context) {
+    String? oldPassword;
+    String? newPassword;
+    String? confirmNewPassword;
+
+    showDialog(
+      context: context,
+      builder: (BuildContext context) {
+        return AlertDialog(
+          title: const Text('Change Password'),
+          content: Column(
+            mainAxisSize: MainAxisSize.min,
+            children: [
+              TextFormField(
+                decoration: const InputDecoration(labelText: 'Old Password'),
+                onChanged: (value) => oldPassword = value,
+                obscureText: true,
+              ),
+              const SizedBox(height: 10),
+              TextFormField(
+                decoration: const InputDecoration(labelText: 'New Password'),
+                onChanged: (value) => newPassword = value,
+                obscureText: true,
+              ),
+              const SizedBox(height: 10),
+              TextFormField(
+                decoration: const InputDecoration(labelText: 'Confirm New Password'),
+                onChanged: (value) => confirmNewPassword = value,
+                obscureText: true,
+              ),
+            ],
+          ),
+          actions: [
+            TextButton(
+              onPressed: () {
+                // Validate input fields and perform password change logic
+                // Here you can implement your logic to validate passwords and perform password change
+                Navigator.of(context).pop();
+              },
+              style: TextButton.styleFrom(
+                backgroundColor: AppColors.buttonColor,
+              ),
+              child: const Text(
+                'Submit',
+                style: TextStyle(color: Colors.white),
+              ),
+            ),
+          ],
+        );
+      },
+    );
+  }
+
+  Widget _buildListItemChangePass(BuildContext context, String title, IconData icon, Function() onTap) {
+    return InkWell(
+      onTap: () {
+        if (title == 'Change Password') {
+          showDialog(
+            context: context,
+            builder: (context) => const ChangePasswordDialog(),
+          );
+        } else {
+          onTap();
+        }
+      },
+      child: Container(
+        decoration: BoxDecoration(
+          border: Border(bottom: BorderSide(color: Colors.grey.shade300)),
+        ),
+        child: ListTile(
+          leading: Icon(icon),
+          title: Text(title),
+          trailing: const Icon(Icons.arrow_forward_ios), // Add arrow icon
+        ),
+      ),
+    );
+  }
+
 
   Widget _buildListItem(
       BuildContext context, String title, IconData icon, Function onTap) {

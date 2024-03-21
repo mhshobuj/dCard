@@ -19,5 +19,6 @@ class AppUrl {
   static var verifyForForgotPass = '${baseUrl}auth/user/forgot/password/';
   static var resetPass = '${baseUrl}auth/user/forgot/password/set/';
   static var userDetails = '${baseUrl}auth/user/details/';
+  static var changePass = '${baseUrl}auth/user/password/change/';
 
 }

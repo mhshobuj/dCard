@@ -152,13 +152,4 @@ class _CardDetailsPageState extends State<CardDetailsPage> {
       // Handle error here
     });
   }
-
-  String? _formatExpiryDate(String? expiresAt) {
-    if (expiresAt != null) {
-      final dateTime = DateTime.parse(expiresAt);
-      final formattedDate = DateFormat('MM/yy').format(dateTime);
-      return formattedDate;
-    }
-    return null;
-  }
 }

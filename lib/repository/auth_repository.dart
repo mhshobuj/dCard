@@ -55,4 +55,13 @@ class AuthRepository{
     }
   }
 
+  Future<BaseResponse> changePassResponse(String token, dynamic data)async {
+    try{
+      dynamic response = await _apiServices.getPostTokenApiResponse(AppUrl.changePass,token,data);
+      return BaseResponse.fromJson(response);
+    }catch(e){
+      rethrow;
+    }
+  }
+
 }
