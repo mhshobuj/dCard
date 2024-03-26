@@ -33,67 +33,77 @@ class _HomeScreenState extends State<HomeScreen> {
     });
   }
 
+  Future<void> _refresh() async {
+    setState(() {
+      getCardInfo();
+      getCollectionHistory();
+    });
+  }
+
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      body: isLoading // Show loading indicator if data is being fetched
-          ? Center(
-              child: Theme(
-                data: ThemeData(
-                  colorScheme: const ColorScheme(
-                  primary: AppColors.buttonColor,
-                  primaryVariant: AppColors.buttonColor,
-                  secondary: AppColors.buttonColor,
-                  secondaryVariant: AppColors.buttonColor,
-                  surface: AppColors.buttonColor,
-                  background: AppColors.buttonColor,
-                  error: AppColors.buttonColor,
-                  onPrimary: AppColors.buttonColor,
-                  onSecondary: AppColors.buttonColor,
-                  onSurface: AppColors.buttonColor,
-                  onBackground: AppColors.buttonColor,
-                  onError: AppColors.buttonColor,
-                  brightness: Brightness.light,
-                ),
-                ),
-                child: const CircularProgressIndicator(),
+      body: RefreshIndicator(
+        onRefresh: _refresh,
+        child: isLoading // Show loading indicator if data is being fetched
+            ? Center(
+          child: Theme(
+            data: ThemeData(
+              colorScheme: const ColorScheme(
+                primary: AppColors.buttonColor,
+                primaryVariant: AppColors.buttonColor,
+                secondary: AppColors.buttonColor,
+                secondaryVariant: AppColors.buttonColor,
+                surface: AppColors.buttonColor,
+                background: AppColors.buttonColor,
+                error: AppColors.buttonColor,
+                onPrimary: AppColors.buttonColor,
+                onSecondary: AppColors.buttonColor,
+                onSurface: AppColors.buttonColor,
+                onBackground: AppColors.buttonColor,
+                onError: AppColors.buttonColor,
+                brightness: Brightness.light,
               ),
-            )
-          : Column(
-              crossAxisAlignment: CrossAxisAlignment.center,
-              children: [
-                const SizedBox(height: 40),
-                // Display the card template
-                CardTemplate(
-                  getCardResponse: getCardResponse, // Pass the response here
-                ),
-                const SizedBox(height: 20),
-                Container(
-                  decoration: const BoxDecoration(
-                    border: Border(
-                      bottom: BorderSide(
-                        color: Colors.black,
-                        width: 2.0,
-                      ),
-                    ),
-                  ),
-                  child: const Align(
-                    alignment: Alignment.centerLeft,
-                    child: Padding(
-                      padding: EdgeInsets.symmetric(horizontal: 8.0),
-                      child: Text(
-                        'Transactions list (last 7 days)',
-                        style: TextStyle(
-                          fontWeight: FontWeight.bold,
-                          fontSize: 18,
-                        ),
-                      ),
-                    ),
-                  ),
-                ),
-                TransactionListWidget(collectionResponse: collectionResponse)
-              ],
             ),
+            child: const CircularProgressIndicator(),
+          ),
+        )
+            : Column(
+          crossAxisAlignment: CrossAxisAlignment.center,
+          children: [
+            const SizedBox(height: 40),
+            // Display the card template
+            CardTemplate(
+              getCardResponse: getCardResponse, // Pass the response here
+            ),
+            const SizedBox(height: 20),
+            Container(
+              decoration: const BoxDecoration(
+                border: Border(
+                  bottom: BorderSide(
+                    color: Colors.black,
+                    width: 2.0,
+                  ),
+                ),
+              ),
+              child: const Align(
+                alignment: Alignment.centerLeft,
+                child: Padding(
+                  padding: EdgeInsets.symmetric(horizontal: 8.0),
+                  child: Text(
+                    'Transactions list (last 7 days)',
+                    style: TextStyle(
+                      fontWeight: FontWeight.bold,
+                      fontSize: 18,
+                    ),
+                  ),
+                ),
+              ),
+            ),
+            TransactionListWidget(collectionResponse: collectionResponse)
+          ],
+        ),
+      ),
     );
   }
 
