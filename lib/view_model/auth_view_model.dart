@@ -51,12 +51,35 @@ class AuthViewModel with ChangeNotifier{
     } catch (error) {
       setLoginLoading(false);
       if (kDebugMode) {
-        Utils.flushBarErrorMessage(error.toString(), context);
+        Utils.flushBarErrorMessage(extractErrorMessage(error.toString()), context);
         print(error.toString());
       }
       // Handle the error and return null or throw it again
       rethrow;
     }
+  }
+
+  String extractErrorMessage(String errorString) {
+    // Find the start and end index of the "status_code" value
+    int statusCodeIndex = errorString.indexOf('"status_code":') + '"status_code":'.length;
+    int statusCodeEndIndex = errorString.indexOf(',', statusCodeIndex);
+    // Extract the status code substring
+    int statusCode = int.parse(errorString.substring(statusCodeIndex, statusCodeEndIndex));
+
+    // Map status code to error message
+    String errorMessage;
+    switch (statusCode) {
+      case 404:
+        errorMessage = "Wrong credentials";
+        break;
+      case 400:
+        errorMessage = "User does not exists";
+        break;
+      default:
+        errorMessage = "Something wrong! Try again.";
+        break;
+    }
+    return errorMessage;
   }
 
   Future<BaseResponse> signUpApi(dynamic data, BuildContext context) async {

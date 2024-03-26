@@ -142,6 +142,8 @@ class _LoginScreenState extends State<LoginScreen> {
                     'usr_email': _emailController.text.toString(),
                     'password': _passwordController.text.toString(),
                   };
+                  // Dismiss the keyboard
+                  FocusScope.of(context).unfocus();
                   authViewMode.loginApi(data, context).then((loginResponse) async {
                     if(loginResponse.statusCode == 200){
                       Navigator.pushNamedAndRemoveUntil(context, RoutesName.landing, (route) => false);
