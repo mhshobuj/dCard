@@ -143,7 +143,7 @@ class _CardTemplateState extends State<CardTemplate> {
                                 print(trimmedCardNumber);
                               }
                               // Perform your card verification process here
-                              await checkCard(context, trimmedCardNumber, isVerifiedNotifier);
+                              await checkCard(context, trimmedCardNumber, isVerifiedNotifier, isLoading);
                               setState(() {
                                 isLoading = false; // Stop loading
                               });
@@ -299,7 +299,7 @@ class _CardTemplateState extends State<CardTemplate> {
     );
   }
 
-  checkCard(BuildContext context, String value, ValueNotifier<bool> isVerifiedNotifier) {
+  checkCard(BuildContext context, String value, ValueNotifier<bool> isVerifiedNotifier, bool isLoading) {
     final homeViewModel = Provider.of<HomeViewModel>(context, listen: false);
     final tokenViewModel = Provider.of<TokenViewModel>(context, listen: false);
 

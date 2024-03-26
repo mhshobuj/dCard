@@ -50,8 +50,8 @@ class AuthViewModel with ChangeNotifier{
       }
     } catch (error) {
       setLoginLoading(false);
+      Utils.flushBarErrorMessage(extractErrorMessage(error.toString()), context);
       if (kDebugMode) {
-        Utils.flushBarErrorMessage(extractErrorMessage(error.toString()), context);
         print(error.toString());
       }
       // Handle the error and return null or throw it again

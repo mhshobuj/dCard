@@ -46,19 +46,44 @@ class HomeViewModel with ChangeNotifier {
       final CheckCardResponse checkCardResponse = await _myRepo.checkCard(token, query);
 
       if (kDebugMode) {
-        print(checkCardResponse.toJson());
         print(checkCardResponse.message);
       }
 
       return checkCardResponse; // Return the cardResponse
     } catch (error) {
+      Utils.flushBarErrorMessage(extractErrorMessage(error.toString()), context);
       if (kDebugMode) {
-        Utils.flushBarErrorMessage(error.toString(), context);
         print(error.toString());
       }
       // Handle the error and return null or throw it again
       rethrow;
     }
+  }
+
+  String extractErrorMessage(String errorString) {
+    // Find the start and end index of the "status_code" value
+    int statusCodeIndex = errorString.indexOf('"status_code":') + '"status_code":'.length;
+    int statusCodeEndIndex = errorString.indexOf(',', statusCodeIndex);
+    // Extract the status code substring
+    int statusCode = int.parse(errorString.substring(statusCodeIndex, statusCodeEndIndex));
+
+    // Map status code to error message
+    String errorMessage;
+    switch (statusCode) {
+      case 500:
+        errorMessage = "Invalid card number";
+        break;
+      case 404:
+        errorMessage = "Wrong credentials";
+        break;
+      case 400:
+        errorMessage = "User does not exists";
+        break;
+      default:
+        errorMessage = "Something wrong! Try again.";
+        break;
+    }
+    return errorMessage;
   }
 
   Future<CollectionHistoryResponse> collectionHistory(String token, String query1, String query2, BuildContext context) async {

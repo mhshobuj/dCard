@@ -145,7 +145,8 @@ class _ApplyCardScreenState extends State<ApplyCardScreen> {
                   'Crimson Cup Dhanmondi 2',
                   'Crimson Cup Dhanmondi 27',
                   'Crimson Cup Gulshan 1',
-                  'Crimson Cup Mirpur 1',
+                  'Crimson Cup Khilgoan',
+                  'Crimson Cup Mirpur Sony',
                   'Crimson Cup Mirpur 12',
                   'Crimson Cup Uttara-13'
                 ]
