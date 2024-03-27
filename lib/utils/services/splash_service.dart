@@ -13,10 +13,10 @@ class SplashServices{
     getUserData().then((value)async{
 
       if(value.token == "null" || value.token == ''){
-        //await Future.delayed(const Duration(seconds: 3));
+        await Future.delayed(const Duration(seconds: 1));
         Navigator.pushNamedAndRemoveUntil(context, RoutesName.login, (route) => false);
       }else{
-        //await Future.delayed(const Duration(seconds: 3));
+        await Future.delayed(const Duration(seconds: 1));
         Navigator.pushNamedAndRemoveUntil(context, RoutesName.landing, (route) => false);
       }
 

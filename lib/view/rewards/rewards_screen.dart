@@ -94,19 +94,16 @@ class _RewardsScreenState extends State<RewardsScreen> {
                   : ListView.builder(
                 itemCount: rewardListResponse!.data!.redeems!.length,
                 itemBuilder: (context, index) {
-                  Redeems redeem =
-                  rewardListResponse!.data!.redeems![index];
+                  Redeems redeem = rewardListResponse!.data!.redeems![index];
                   return Card(
                     elevation: 3,
-                    margin: const EdgeInsets.symmetric(
-                        vertical: 8, horizontal: 16),
+                    margin: const EdgeInsets.symmetric(vertical: 8, horizontal: 16),
                     child: ListTile(
                       leading: Padding(
                         padding: const EdgeInsets.only(left: 2.0),
-                        // Add left margin
                         child: SizedBox(
-                          height: 60, // Adjust height as needed
-                          width: 60, // Adjust width as needed
+                          height: 60,
+                          width: 60,
                           child: CircleAvatar(
                             backgroundImage: NetworkImage(
                               redeem.merchantLogo ?? '',
@@ -114,68 +111,77 @@ class _RewardsScreenState extends State<RewardsScreen> {
                           ),
                         ),
                       ),
-                      title: Row(
-                        mainAxisAlignment:
-                        MainAxisAlignment.spaceBetween,
+                      title: Column(
+                        crossAxisAlignment: CrossAxisAlignment.start,
                         children: [
-                          Column(
-                            crossAxisAlignment:
-                            CrossAxisAlignment.start,
+                          Text(
+                            redeem.purpose ?? '',
+                            style: const TextStyle(
+                              fontSize: 16,
+                              fontWeight: FontWeight.bold,
+                            ),
+                          ),
+                          const SizedBox(height: 4),
+                          Text(
+                            'Paid at: ${redeem.createdAt ?? ''}',
+                            style: const TextStyle(
+                              fontSize: 14,
+                            ),
+                          ),
+                          const SizedBox(height: 4),
+                          Text(
+                            'Amount: ${redeem.amount?.toStringAsFixed(2) ?? ""} TK',
+                            style: const TextStyle(
+                              fontSize: 14,
+                              fontWeight: FontWeight.bold,
+                            ),
+                          ),
+                          SizedBox(height: 4),
+                          Row(
+                            mainAxisAlignment: MainAxisAlignment.spaceBetween,
                             children: [
-                              Text(
-                                redeem.purpose ?? '',
-                                style: const TextStyle(
-                                  fontSize: 16,
-                                  fontWeight: FontWeight.bold,
+                              if (redeem.serviceDetail!.earnedPoints! > 0)
+                                Row(
+                                  children: [
+                                    const Text(
+                                      'Earned: ',
+                                      style: TextStyle(
+                                        color: Colors.green,
+                                        fontWeight: FontWeight.bold,
+                                      ),
+                                    ),
+                                    const Icon(Icons.add, color: Colors.green, size: 18),
+                                    Text(
+                                      '${redeem.serviceDetail?.earnedPoints ?? '0'} points',
+                                      style: const TextStyle(
+                                        color: Colors.green,
+                                        fontWeight: FontWeight.bold,
+                                      ),
+                                    ),
+                                  ],
                                 ),
-                              ),
-                              const SizedBox(height: 4),
-                              // Adding some space between purpose and paid at
-                              Text(
-                                'Paid at: ${redeem.createdAt ?? ''}',
-                                style: const TextStyle(
-                                  fontSize: 14,
+                              if (redeem.serviceDetail!.usedPoint! > 0)
+                                Row(
+                                  children: [
+                                    const Text(
+                                      'Redeem: ',
+                                      style: TextStyle(
+                                        color: Colors.red,
+                                        fontWeight: FontWeight.bold,
+                                      ),
+                                    ),
+                                    const Icon(Icons.remove, color: Colors.red, size: 18),
+                                    Text(
+                                      '${redeem.serviceDetail?.usedPoint ?? '0'} points',
+                                      style: const TextStyle(
+                                        color: Colors.red,
+                                        fontWeight: FontWeight.bold,
+                                      ),
+                                    ),
+                                  ],
                                 ),
-                              ),
-                              const SizedBox(height: 4),
-                              // Adding some space between paid at and amount
-                              Text(
-                                'Amount: ${redeem.amount?.toStringAsFixed(2) ?? ""} TK',
-                                style: const TextStyle(
-                                  fontSize: 14,
-                                  fontWeight: FontWeight.bold,
-                                ),
-                              ),
                             ],
                           ),
-                          if (redeem.serviceDetail!.earnedPoints! > 0)
-                            Row(
-                              children: [
-                                const Icon(Icons.add,
-                                    color: Colors.green),
-                                // Add icon for earned points
-                                Text(
-                                  ' ${redeem.serviceDetail?.earnedPoints ?? '0'} pts',
-                                  style: const TextStyle(
-                                      color: Colors.green,
-                                      fontWeight: FontWeight.bold),
-                                ),
-                              ],
-                            ),
-                          if (redeem.serviceDetail!.usedPoint! > 0)
-                            Row(
-                              children: [
-                                const Icon(Icons.remove,
-                                    color: Colors.red),
-                                // Add icon for used points
-                                Text(
-                                  ' ${redeem.serviceDetail?.usedPoint ?? '0'} pts',
-                                  style: const TextStyle(
-                                      color: Colors.red,
-                                      fontWeight: FontWeight.bold),
-                                ),
-                              ],
-                            ),
                         ],
                       ),
                     ),
