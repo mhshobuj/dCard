@@ -129,33 +129,70 @@ class _CardDetailsPageState extends State<CardDetailsPage> {
                     // Show confirmation dialog before changing card status
                     showDialog(
                       context: context,
-                      builder: (context) => AlertDialog(
-                        title: Text(value ? 'Activate Card?' : 'Deactivate Card?'),
-                        content: Text(value ? 'Do you want to activate the card?' : 'Do you want to deactivate the card?'),
-                        actions: [
-                          TextButton(
-                            onPressed: () {
-                              Navigator.pop(context); // Close the dialog
-                            },
-                            child: const Text('NO'),
-                          ),
-                          TextButton(
-                            onPressed: () {
-                              setState(() {
-                                isCardActive = value; // Update the state of the Switch
-                                // Perform any action based on the toggle (e.g., call a function to activate/deactivate the card)
-                                cardActiveInactive(value, isVerifiedNotifier);
-                              });
-                              Navigator.pop(context); // Close the dialog
-                            },
-                            child: const Text('YES'),
-                          ),
-                        ],
-                      ),
+                      builder: (context) {
+                        bool isLoading = false; // Track loading state
+                        return StatefulBuilder(
+                          builder: (context, setState) {
+                            return AlertDialog(
+                              title: Text(
+                                value ? 'Your card is deactivate now' : 'Your card is active now',
+                                style: const TextStyle(color: AppColors.buttonColor),
+                              ),
+                              content: Text(
+                                value
+                                    ? 'Do you want to activate the card?'
+                                    : 'Do you want to deactivate the card?',
+                              ),
+                              actions: [
+                                Padding(
+                                  padding: const EdgeInsets.only(right: 8.0), // Add margin between buttons
+                                  child: ElevatedButton(
+                                    onPressed: () {
+                                      Navigator.pop(context); // Close the dialog
+                                    },
+                                    style: ElevatedButton.styleFrom(
+                                      primary: AppColors.buttonColor,
+                                    ),
+                                    child: const Text('NO'),
+                                  ),
+                                ),
+                                Padding(
+                                  padding: const EdgeInsets.only(left: 8.0), // Add margin between buttons
+                                  child: ElevatedButton(
+                                    onPressed: () async {
+                                      setState(() {
+                                        isLoading = true; // Start loading
+                                      });
+                                      // Perform card activation/deactivation operation
+                                      await cardActiveInactive(value, isVerifiedNotifier, isLoading);
+                                      setState(() {
+                                        isCardActive = value; // Update the state of the Switch
+                                      });
+                                    },
+                                    style: ElevatedButton.styleFrom(
+                                      primary: isLoading ? Colors.grey : AppColors.buttonColor,
+                                    ),
+                                    child: isLoading
+                                        ? const SizedBox(
+                                      width: 20,
+                                      height: 20,
+                                      child: CircularProgressIndicator(
+                                        color: Colors.white,
+                                        strokeWidth: 3,
+                                      ),
+                                    )
+                                        : const Text('YES'),
+                                  ),
+                                ),
+                              ],
+                            );
+                          },
+                        );
+                      },
                     );
                   },
                   activeTrackColor: Colors.green, // Set the track color when active
-                  activeColor: AppColors.buttonColor, // Set the thumb color when active
+                  activeColor: Colors.grey, // Set the thumb color when active
                 ),
                 const SizedBox(width: 10),
                 Text(
@@ -200,7 +237,7 @@ class _CardDetailsPageState extends State<CardDetailsPage> {
     });
   }
 
-  void cardActiveInactive(bool value, ValueNotifier<bool> isVerifiedNotifier) {
+  cardActiveInactive(bool value, ValueNotifier<bool> isVerifiedNotifier, bool isLoading) {
     final homeViewModel = Provider.of<HomeViewModel>(context, listen: false);
     final tokenViewModel = Provider.of<TokenViewModel>(context, listen: false);
 
@@ -213,6 +250,10 @@ class _CardDetailsPageState extends State<CardDetailsPage> {
         homeViewModel.cardInactive(token!, context).then((cardInactiveResponse) {
           if(cardInactiveResponse.statusCode == 200){
             Utils.flushBarErrorMessage("Your card is inactivated", context);
+            Navigator.pushReplacement(
+              context,
+              MaterialPageRoute(builder: (BuildContext context) => CardDetailsPage()),
+            );
           }
         }).catchError((error) {
           if (kDebugMode) {
@@ -279,8 +320,10 @@ class _CardDetailsPageState extends State<CardDetailsPage> {
       homeViewModel.cardEnable(context, token!,data ).then((enableCardResponse) {
         if(enableCardResponse.statusCode == 200){
           Utils.flushBarErrorMessage("Now your card is activated again.", context);
-          Navigator.pop(context); // Close the dialog
-          getCardInfo();
+          Navigator.pushReplacement(
+            context,
+            MaterialPageRoute(builder: (BuildContext context) => CardDetailsPage()),
+          );
           if (kDebugMode) {
             print(enableCardResponse.message);
           }
@@ -297,5 +340,15 @@ class _CardDetailsPageState extends State<CardDetailsPage> {
       }
       // Handle error here
     });
+  }
+
+  void closeAllDialogs(BuildContext context) {
+    Navigator.of(context).popUntil((route) => route is! PopupRoute);
+  }
+
+  @override
+  void dispose() {
+    // Release any resources here
+    super.dispose();
   }
 }
