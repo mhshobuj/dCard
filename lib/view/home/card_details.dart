@@ -1,10 +1,11 @@
 import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
-import 'package:intl/intl.dart';
 import 'package:provider/provider.dart';
 
 import '../../model/get_card_model.dart';
 import '../../res/color.dart';
+import '../../res/components/otp_popup.dart';
+import '../../utils/utils.dart';
 import '../../view_model/home_view_model.dart';
 import '../../view_model/login_view_model.dart';
 
@@ -15,6 +16,7 @@ class CardDetailsPage extends StatefulWidget {
 
 class _CardDetailsPageState extends State<CardDetailsPage> {
   GetCardModel? getCardResponse;
+  bool isCardActive = false;
 
   @override
   void initState() {
@@ -27,6 +29,7 @@ class _CardDetailsPageState extends State<CardDetailsPage> {
 
   @override
   Widget build(BuildContext context) {
+    ValueNotifier<bool> isVerifiedNotifier = ValueNotifier(false);
     return Scaffold(
       appBar: AppBar(
         title: const Text(
@@ -53,7 +56,7 @@ class _CardDetailsPageState extends State<CardDetailsPage> {
             ),
             const SizedBox(height: 5),
             Text(
-              getCardResponse?.data?.cardName?.toUpperCase() ?? '',// Replace with actual cardholder name
+              getCardResponse?.data?.cardName?.toUpperCase() ?? '',
               style: const TextStyle(fontSize: 14),
             ),
             const SizedBox(height: 20),
@@ -66,7 +69,7 @@ class _CardDetailsPageState extends State<CardDetailsPage> {
             ),
             const SizedBox(height: 5),
             Text(
-              getCardResponse?.data?.cardNumber?.substring(getCardResponse!.data!.cardNumber!.length - 4).padLeft(getCardResponse!.data!.cardNumber!.length, '*') ?? '', // Replace with actual card number
+              getCardResponse?.data?.cardNumber?.substring(getCardResponse!.data!.cardNumber!.length - 4).padLeft(getCardResponse!.data!.cardNumber!.length, '*') ?? '',
               style: const TextStyle(fontSize: 14),
             ),
             const SizedBox(height: 20),
@@ -85,7 +88,7 @@ class _CardDetailsPageState extends State<CardDetailsPage> {
                     ),
                     const SizedBox(height: 5),
                     Text(
-                      getCardResponse?.data?.expiresAt ?? '', // Replace with actual expiry date
+                      getCardResponse?.data?.expiresAt ?? '',
                       style: const TextStyle(fontSize: 14),
                     ),
                   ],
@@ -102,25 +105,64 @@ class _CardDetailsPageState extends State<CardDetailsPage> {
                     ),
                     const SizedBox(height: 5),
                     Text(
-                      getCardResponse?.data?.cvc ?? '', // Replace with actual CVC number
-                      style: const TextStyle(fontSize: 14)
+                        getCardResponse?.data?.cvc ?? '',
+                        style: const TextStyle(fontSize: 14)
                     ),
                   ],
                 ),
               ],
             ),
             const SizedBox(height: 20),
-            const Text(
-              'Card Status',
-              style: TextStyle(
-                fontSize: 16,
-                fontWeight: FontWeight.bold,
-              ),
-            ),
-            const SizedBox(height: 5),
-            Text(
-              getCardResponse?.data?.status ?? '', // Replace with actual card status
-              style: const TextStyle(fontSize: 14),
+            Row(
+              children: [
+                const Text(
+                  'Card Status:',
+                  style: TextStyle(
+                    fontSize: 16,
+                    fontWeight: FontWeight.bold,
+                  ),
+                ),
+                const SizedBox(width: 10),
+                Switch(
+                  value: isCardActive, // Assign the value of the Switch widget
+                  onChanged: (value) {
+                    // Show confirmation dialog before changing card status
+                    showDialog(
+                      context: context,
+                      builder: (context) => AlertDialog(
+                        title: Text(value ? 'Activate Card?' : 'Deactivate Card?'),
+                        content: Text(value ? 'Do you want to activate the card?' : 'Do you want to deactivate the card?'),
+                        actions: [
+                          TextButton(
+                            onPressed: () {
+                              Navigator.pop(context); // Close the dialog
+                            },
+                            child: const Text('NO'),
+                          ),
+                          TextButton(
+                            onPressed: () {
+                              setState(() {
+                                isCardActive = value; // Update the state of the Switch
+                                // Perform any action based on the toggle (e.g., call a function to activate/deactivate the card)
+                                cardActiveInactive(value, isVerifiedNotifier);
+                              });
+                              Navigator.pop(context); // Close the dialog
+                            },
+                            child: const Text('YES'),
+                          ),
+                        ],
+                      ),
+                    );
+                  },
+                  activeTrackColor: Colors.green, // Set the track color when active
+                  activeColor: AppColors.buttonColor, // Set the thumb color when active
+                ),
+                const SizedBox(width: 10),
+                Text(
+                  getCardResponse?.data?.status ?? '',
+                  style: const TextStyle(fontSize: 14),
+                ),
+              ],
             ),
           ],
         ),
@@ -136,9 +178,113 @@ class _CardDetailsPageState extends State<CardDetailsPage> {
       final token = loginModel.token;
       homeViewModel.getCardInfo(token!, context).then((getCardResponse) {
         // Update the state based on the hasCard value
+        if(getCardResponse.data?.status == 'ACTIVE'){
+          isCardActive = true;
+        }else {
+          isCardActive = false;
+        }
         setState(() {
           this.getCardResponse = getCardResponse;
         });
+      }).catchError((error) {
+        if (kDebugMode) {
+          print(error);
+        }
+        // Handle error here
+      });
+    }).catchError((error) {
+      if (kDebugMode) {
+        print(error);
+      }
+      // Handle error here
+    });
+  }
+
+  void cardActiveInactive(bool value, ValueNotifier<bool> isVerifiedNotifier) {
+    final homeViewModel = Provider.of<HomeViewModel>(context, listen: false);
+    final tokenViewModel = Provider.of<TokenViewModel>(context, listen: false);
+
+    tokenViewModel.getToken().then((loginModel) {
+      final token = loginModel.token;
+      if(!value){
+        if (kDebugMode) {
+          print(value);
+        }
+        homeViewModel.cardInactive(token!, context).then((cardInactiveResponse) {
+          if(cardInactiveResponse.statusCode == 200){
+            Utils.flushBarErrorMessage("Your card is inactivated", context);
+          }
+        }).catchError((error) {
+          if (kDebugMode) {
+            print(error);
+          }
+          // Handle error here
+        });
+      }else{
+        sendActiveOtp(context, homeViewModel, tokenViewModel, isVerifiedNotifier);
+      }
+    }).catchError((error) {
+      if (kDebugMode) {
+        print(error);
+      }
+      // Handle error here
+    });
+  }
+
+  sendActiveOtp(BuildContext context, HomeViewModel homeViewModel, TokenViewModel tokenViewModel, ValueNotifier<bool> isVerifiedNotifier) {
+    tokenViewModel.getToken().then((loginModel) {
+      final token = loginModel.token;
+      homeViewModel.getActiveOtp(token!, getCardResponse!.data!.skuNumber.toString(), context).then((getActiveOtpResponse) {
+        if(getActiveOtpResponse.statusCode == 200){
+          showDialog(
+            context: context,
+            builder: (context) => OtpPopup(
+              isVerified: isVerifiedNotifier, // Pass isVerifiedNotifier
+              onSubmit: (otp) async {
+                //Utils.flushBarErrorMessage("Active $otp", context);
+                if (kDebugMode) {
+                  print('active $otp');
+                }
+                if(otp.isNotEmpty) {
+                  await enableCard(
+                      context, tokenViewModel, homeViewModel, otp);
+                }else{
+                  Utils.flushBarErrorMessage("Please Input the OTP", context);
+                }
+              },
+            ),
+          );
+        }
+      }).catchError((error) {
+        if (kDebugMode) {
+          print(error);
+        }
+        // Handle error here
+      });
+    }).catchError((error) {
+      if (kDebugMode) {
+        print(error);
+      }
+      // Handle error here
+    });
+  }
+
+  enableCard(BuildContext context, TokenViewModel tokenViewModel, HomeViewModel homeViewModel, String otp) {
+    final Map<String, String> data = {
+      'otp': otp,
+    };
+
+    tokenViewModel.getToken().then((loginModel) {
+      final token = loginModel.token;
+      homeViewModel.cardEnable(context, token!,data ).then((enableCardResponse) {
+        if(enableCardResponse.statusCode == 200){
+          Utils.flushBarErrorMessage("Now your card is activated again.", context);
+          Navigator.pop(context); // Close the dialog
+          getCardInfo();
+          if (kDebugMode) {
+            print(enableCardResponse.message);
+          }
+        }
       }).catchError((error) {
         if (kDebugMode) {
           print(error);

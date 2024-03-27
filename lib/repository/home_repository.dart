@@ -55,4 +55,22 @@ class HomeRepository{
       rethrow;
     }
   }
+
+  Future<BaseResponse> cardInactive(String token)async {
+    try{
+      dynamic response = await _apiServices.getGetTokenApiResponse(AppUrl.cardInactive, token);
+      return BaseResponse.fromJson(response);
+    }catch(e){
+      rethrow;
+    }
+  }
+
+  Future<BaseResponse> cardEnable(String token, dynamic data)async {
+    try{
+      dynamic response = await _apiServices.getPostTokenApiResponse(AppUrl.cardEnable, token, data);
+      return BaseResponse.fromJson(response);
+    }catch(e){
+      rethrow;
+    }
+  }
 }

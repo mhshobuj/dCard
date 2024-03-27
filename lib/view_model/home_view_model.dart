@@ -145,4 +145,44 @@ class HomeViewModel with ChangeNotifier {
       rethrow;
     }
   }
+
+  Future<BaseResponse> cardInactive(String token, BuildContext context) async {
+    try {
+      final BaseResponse cardInactive = await _myRepo.cardInactive(token);
+
+      if (kDebugMode) {
+        print(cardInactive.toJson());
+        print(cardInactive.message);
+      }
+
+      return cardInactive; // Return the cardResponse
+    } catch (error) {
+      if (kDebugMode) {
+        Utils.flushBarErrorMessage(error.toString(), context);
+        print(error.toString());
+      }
+      // Handle the error and return null or throw it again
+      rethrow;
+    }
+  }
+
+  Future<BaseResponse> cardEnable(BuildContext context, String token, dynamic data) async {
+    try {
+      final BaseResponse cardEnableResponse = await _myRepo.cardEnable(token, data);
+
+      if (kDebugMode) {
+        print(cardEnableResponse.message);
+        print(cardEnableResponse.toJson());
+      }
+
+      return cardEnableResponse; // Return the cardResponse
+    } catch (error) {
+      if (kDebugMode) {
+        Utils.flushBarErrorMessage(error.toString(), context);
+        print(error.toString());
+      }
+      // Handle the error and return null or throw it again
+      rethrow;
+    }
+  }
 }
