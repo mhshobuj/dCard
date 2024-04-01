@@ -19,6 +19,7 @@ class FAQPage extends StatelessWidget {
         ),
         centerTitle: true,
         backgroundColor: AppColors.buttonColor,
+        iconTheme: const IconThemeData(color: Colors.white),
       ),
       body: ListView(
         children: const [

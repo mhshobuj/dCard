@@ -84,7 +84,7 @@ class _ForgotPasswordDialogState extends State<ForgotPasswordDialog> {
                         await resetPassword(context);
                       },
                 style: ElevatedButton.styleFrom(
-                  primary: AppColors.buttonColor,
+                  backgroundColor: AppColors.buttonColor,
                   shape: RoundedRectangleBorder(
                     borderRadius: BorderRadius.circular(8.0),
                   ),
@@ -115,7 +115,7 @@ class _ForgotPasswordDialogState extends State<ForgotPasswordDialog> {
                         userVerify(context);
                       },
                 style: ElevatedButton.styleFrom(
-                  primary: AppColors.buttonColor,
+                  backgroundColor: AppColors.buttonColor,
                   shape: RoundedRectangleBorder(
                     borderRadius: BorderRadius.circular(8.0),
                   ),

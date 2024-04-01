@@ -37,6 +37,7 @@ class _AboutPageState extends State<AboutPage> {
         ),
         centerTitle: true,
         backgroundColor: AppColors.buttonColor,
+        iconTheme: const IconThemeData(color: Colors.white),
       ),
       body: Center( // Center the content vertically and horizontally
         child: Padding(

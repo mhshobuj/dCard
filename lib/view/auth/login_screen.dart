@@ -1,3 +1,4 @@
+import 'package:dma_card/res/color.dart';
 import 'package:dma_card/res/components/round_button.dart';
 import 'package:dma_card/utils/routes/routes_name.dart';
 import 'package:dma_card/utils/utils.dart';
@@ -56,13 +57,19 @@ class _LoginScreenState extends State<LoginScreen> {
                 controller: _emailController,
                 keyboardType: TextInputType.emailAddress,
                 focusNode: emailFocusNode,
+                cursorColor: Colors.grey,
                 decoration: InputDecoration(
                   labelText: 'Email/Phone',
+                  labelStyle: const TextStyle(color: Colors.grey),
                   hintText: 'Enter email or phone',
                   prefixIcon: const Icon(Icons.supervised_user_circle_outlined),
                   border: OutlineInputBorder(
                     borderRadius: BorderRadius.circular(20),
                     borderSide: const BorderSide(color: Colors.black, width: 2.0),
+                  ),
+                  focusedBorder: OutlineInputBorder(
+                    borderRadius: BorderRadius.circular(20),
+                    borderSide: const BorderSide(color: AppColors.buttonColor, width: 2.0), // Set border color when focused
                   ),
                 ),
                 onFieldSubmitted: (value) {
@@ -78,10 +85,12 @@ class _LoginScreenState extends State<LoginScreen> {
                 keyboardType: TextInputType.visiblePassword,
                 focusNode: passwordFocusNode,
                 obscureText: _obsecurePassword.value,
+                cursorColor: Colors.grey,
                 obscuringCharacter: '*',
                 decoration: InputDecoration(
                   labelText: 'Password',
                   hintText: 'Enter password',
+                  labelStyle: const TextStyle(color: Colors.grey),
                   prefixIcon: const Icon(Icons.lock_clock_outlined),
                   suffixIcon: InkWell(
                     onTap: () {
@@ -98,6 +107,10 @@ class _LoginScreenState extends State<LoginScreen> {
                   border: OutlineInputBorder(
                     borderRadius: BorderRadius.circular(20),
                     borderSide: const BorderSide(color: Colors.black, width: 2.0),
+                  ),
+                  focusedBorder: OutlineInputBorder(
+                    borderRadius: BorderRadius.circular(20),
+                    borderSide: const BorderSide(color: AppColors.buttonColor, width: 2.0), // Set border color when focused
                   ),
                 ),
               ),

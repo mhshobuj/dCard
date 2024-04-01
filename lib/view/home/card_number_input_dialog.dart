@@ -35,7 +35,7 @@ class _CreditCardNumberDialogState extends State<CreditCardNumberDialog> {
               decoration: InputDecoration(
                 hintText: 'XXXX XXXX XXXX XXXX',
                 counterText: '', // Hide character counter
-                contentPadding: EdgeInsets.symmetric(vertical: 15, horizontal: 10),
+                contentPadding: const EdgeInsets.symmetric(vertical: 15, horizontal: 10),
                 enabledBorder: OutlineInputBorder(
                   borderRadius: BorderRadius.circular(8.0),
                   borderSide: BorderSide(color: Colors.grey[300]!),
@@ -90,7 +90,7 @@ class _CreditCardNumberDialogState extends State<CreditCardNumberDialog> {
                     }
                   },
                   style: ElevatedButton.styleFrom(
-                    primary: _isLoading ? Colors.transparent : AppColors.buttonColor, // Change button color to transparent when isLoading is true
+                    backgroundColor: _isLoading ? Colors.transparent : AppColors.buttonColor, // Change button color to transparent when isLoading is true
                     shape: RoundedRectangleBorder(
                       borderRadius: BorderRadius.circular(10.0),
                     ),

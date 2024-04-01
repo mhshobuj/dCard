@@ -75,6 +75,7 @@ class _EditScreenState extends State<EditScreen> {
         ),
         centerTitle: true,
         backgroundColor: AppColors.buttonColor,
+        iconTheme: const IconThemeData(color: Colors.white),
       ),
       body: isLoading
           ? const Center(

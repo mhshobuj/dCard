@@ -64,7 +64,7 @@ class _ChangePasswordDialogState extends State<ChangePasswordDialog> {
         ElevatedButton(
           onPressed: _isLoading ? null : _submit,
           style: ElevatedButton.styleFrom(
-            primary: AppColors.buttonColor, // Use your desired button color
+            backgroundColor: AppColors.buttonColor, // Use your desired button color
           ),
           child: _isLoading
               ? const SizedBox(

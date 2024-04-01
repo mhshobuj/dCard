@@ -51,9 +51,7 @@ class _HomeScreenState extends State<HomeScreen> {
             data: ThemeData(
               colorScheme: const ColorScheme(
                 primary: AppColors.buttonColor,
-                primaryVariant: AppColors.buttonColor,
                 secondary: AppColors.buttonColor,
-                secondaryVariant: AppColors.buttonColor,
                 surface: AppColors.buttonColor,
                 background: AppColors.buttonColor,
                 error: AppColors.buttonColor,

@@ -58,7 +58,7 @@ class _CardTemplateState extends State<CardTemplate> {
                         Navigator.pushNamed(context, RoutesName.apply);
                       },
                       style: ElevatedButton.styleFrom(
-                        primary: AppColors.buttonColor,
+                        backgroundColor: AppColors.buttonColor,
                       ),
                       child: const Text('Apply Card'),
                     ),
@@ -68,10 +68,10 @@ class _CardTemplateState extends State<CardTemplate> {
                 if(widget.getCardResponse?.data?.request?.status == 'PENDING')
                   Container(
                     margin: const EdgeInsets.only(top: 100), // Adjust the top margin as needed
-                    child: Center(
+                    child: const Center(
                       child: Column(
                         mainAxisSize: MainAxisSize.min,
-                        children: const [
+                        children: [
                           Text(
                             'Your request has been submitted, Please wait for approval.',
                             textAlign: TextAlign.center,
@@ -88,10 +88,10 @@ class _CardTemplateState extends State<CardTemplate> {
               if(widget.getCardResponse?.data?.request?.status == 'PRINTING')
                 Container(
                   margin: const EdgeInsets.only(top: 100), // Adjust the top margin as needed
-                  child: Center(
+                  child: const Center(
                     child: Column(
                       mainAxisSize: MainAxisSize.min,
-                      children: const [
+                      children: [
                         Text(
                           'Your loyalty card is in printing queue.',
                           textAlign: TextAlign.center,
@@ -108,10 +108,10 @@ class _CardTemplateState extends State<CardTemplate> {
               if(widget.getCardResponse?.data?.request?.status == 'PRINTED')
                 Container(
                   margin: const EdgeInsets.only(top: 100), // Adjust the top margin as needed
-                  child: Center(
+                  child: const Center(
                     child: Column(
                       mainAxisSize: MainAxisSize.min,
-                      children: const [
+                      children: [
                         Text(
                           'Your loyalty card has been printed! Please wait for ready to delivery message.',
                           textAlign: TextAlign.center,
@@ -152,7 +152,7 @@ class _CardTemplateState extends State<CardTemplate> {
                         );
                       },
                       style: ElevatedButton.styleFrom(
-                        primary: AppColors.buttonColor,
+                        backgroundColor: AppColors.buttonColor,
                         shape: RoundedRectangleBorder(
                           borderRadius: BorderRadius.circular(6.0), // Adjust as needed
                         ),
@@ -183,7 +183,7 @@ class _CardTemplateState extends State<CardTemplate> {
                         }); // Call your API function with a callback
                       },
                       style: ElevatedButton.styleFrom(
-                        primary: isButtonLoading ? Colors.grey : AppColors.buttonColor, // Change button color when loading
+                        backgroundColor: isButtonLoading ? Colors.grey : AppColors.buttonColor, // Change button color when loading
                         shape: RoundedRectangleBorder(
                           borderRadius: BorderRadius.circular(6.0), // Adjust as needed
                         ),

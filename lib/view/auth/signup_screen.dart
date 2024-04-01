@@ -75,14 +75,20 @@ class _SignUpScreenState extends State<SignUpScreen> {
                   controller: _firstNameController,
                   keyboardType: TextInputType.name,
                   focusNode: firstNameFocusNode,
+                  cursorColor: Colors.grey,
                   decoration: InputDecoration(
                     labelText: 'First Name',
+                    labelStyle: const TextStyle(color: Colors.grey),
                     hintText: 'Enter first name',
                     prefixIcon: const Icon(Icons.person),
                     border: OutlineInputBorder(
                       borderRadius: BorderRadius.circular(20),
                       borderSide:
                           const BorderSide(color: Colors.black, width: 2.0),
+                    ),
+                    focusedBorder: OutlineInputBorder(
+                      borderRadius: BorderRadius.circular(20),
+                      borderSide: const BorderSide(color: AppColors.buttonColor, width: 2.0), // Set border color when focused
                     ),
                   ),
                   onFieldSubmitted: (value) {
@@ -98,14 +104,20 @@ class _SignUpScreenState extends State<SignUpScreen> {
                   controller: _lastNameController,
                   keyboardType: TextInputType.name,
                   focusNode: lastNameFocusNode,
+                  cursorColor: Colors.grey,
                   decoration: InputDecoration(
                     labelText: 'Last Name',
+                    labelStyle: const TextStyle(color: Colors.grey),
                     hintText: 'Enter Last name',
                     prefixIcon: const Icon(Icons.person),
                     border: OutlineInputBorder(
                       borderRadius: BorderRadius.circular(20),
                       borderSide:
                           const BorderSide(color: Colors.black, width: 2.0),
+                    ),
+                    focusedBorder: OutlineInputBorder(
+                      borderRadius: BorderRadius.circular(20),
+                      borderSide: const BorderSide(color: AppColors.buttonColor, width: 2.0), // Set border color when focused
                     ),
                   ),
                   onFieldSubmitted: (value) {
@@ -121,14 +133,20 @@ class _SignUpScreenState extends State<SignUpScreen> {
                   controller: _emailController,
                   keyboardType: TextInputType.emailAddress,
                   focusNode: emailFocusNode,
+                  cursorColor: Colors.grey,
                   decoration: InputDecoration(
                     labelText: 'Email',
+                    labelStyle: const TextStyle(color: Colors.grey),
                     hintText: 'Enter email',
                     prefixIcon: const Icon(Icons.email_outlined),
                     border: OutlineInputBorder(
                       borderRadius: BorderRadius.circular(20),
                       borderSide:
                           const BorderSide(color: Colors.black, width: 2.0),
+                    ),
+                    focusedBorder: OutlineInputBorder(
+                      borderRadius: BorderRadius.circular(20),
+                      borderSide: const BorderSide(color: AppColors.buttonColor, width: 2.0), // Set border color when focused
                     ),
                   ),
                   onFieldSubmitted: (value) {
@@ -144,14 +162,20 @@ class _SignUpScreenState extends State<SignUpScreen> {
                   controller: _phoneController,
                   keyboardType: TextInputType.phone,
                   focusNode: phoneFocusNode,
+                  cursorColor: Colors.grey,
                   decoration: InputDecoration(
                     labelText: 'Phone',
+                    labelStyle: const TextStyle(color: Colors.grey),
                     hintText: 'Enter phone number',
                     prefixIcon: const Icon(Icons.phone),
                     border: OutlineInputBorder(
                       borderRadius: BorderRadius.circular(20),
                       borderSide:
                           const BorderSide(color: Colors.black, width: 2.0),
+                    ),
+                    focusedBorder: OutlineInputBorder(
+                      borderRadius: BorderRadius.circular(20),
+                      borderSide: const BorderSide(color: AppColors.buttonColor, width: 2.0), // Set border color when focused
                     ),
                   ),
                 ),
@@ -172,6 +196,7 @@ class _SignUpScreenState extends State<SignUpScreen> {
                           _selectedGender = value!;
                         });
                       },
+                      activeColor: AppColors.buttonColor,
                     ),
                     const Text("Male"),
                     const SizedBox(width: 10),
@@ -183,6 +208,7 @@ class _SignUpScreenState extends State<SignUpScreen> {
                           _selectedGender = value!;
                         });
                       },
+                      activeColor: AppColors.buttonColor,
                     ),
                     const Text("Female"),
                   ],
@@ -224,6 +250,7 @@ class _SignUpScreenState extends State<SignUpScreen> {
                           backgroundColor: AppColors.buttonColor, // Set your desired button color
                         ),
                         child: Text(
+                          style: const TextStyle(color: Colors.white),
                           _selectedDate != null
                               ? DateFormat('dd-MM-yyyy').format(_selectedDate!)
                               : 'Choose Birthday',
@@ -242,8 +269,10 @@ class _SignUpScreenState extends State<SignUpScreen> {
                   focusNode: passwordFocusNode,
                   obscureText: _obsecurePassword.value,
                   obscuringCharacter: '*',
+                  cursorColor: Colors.grey,
                   decoration: InputDecoration(
                     labelText: 'Password',
+                    labelStyle: const TextStyle(color: Colors.grey),
                     hintText: 'Enter password',
                     prefixIcon: const Icon(Icons.lock_clock_outlined),
                     suffixIcon: InkWell(
@@ -263,6 +292,10 @@ class _SignUpScreenState extends State<SignUpScreen> {
                       borderSide:
                           const BorderSide(color: Colors.black, width: 2.0),
                     ),
+                    focusedBorder: OutlineInputBorder(
+                      borderRadius: BorderRadius.circular(20),
+                      borderSide: const BorderSide(color: AppColors.buttonColor, width: 2.0), // Set border color when focused
+                    ),
                   ),
                 ),
               ),
@@ -278,6 +311,7 @@ class _SignUpScreenState extends State<SignUpScreen> {
                           isTermsAccepted = value!;
                         });
                       },
+                      activeColor: AppColors.buttonColor,
                     ),
                     const Text(
                         'I agree to the Terms & Conditions and Privacy Policy'),
