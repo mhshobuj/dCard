@@ -4,105 +4,188 @@ import 'package:dma_card/data/app_exceptions.dart';
 import 'package:dma_card/data/network/BaseApiServices.dart';
 import 'package:http/http.dart' as http;
 import 'package:http/http.dart';
+import 'package:dio/dio.dart';
+
 
 class NetworkApiServices extends BaseApiServices {
+
   @override
   Future getGetTokenApiResponse(String url, String token) async {
-    dynamic responseJson;
-
     try {
-      final response = await http.get(Uri.parse(url), headers: {
-        'Authorization': 'Bearer $token'
-      }).timeout(const Duration(seconds: 10));
-      responseJson = returnResponse(response);
-    } on SocketException {
-      throw FetchDataException("No Internet Connection");
-    }
+      final dio = Dio(); // Create a Dio instance
+      final response = await dio.get(
+        url,
+        options: Options(
+          headers: {
+            'Authorization': 'Bearer $token',
+          },
+        ),
+      );
 
-    return responseJson;
+      // Handle successful response
+      if (response.statusCode == 200) {
+        return response.data;
+      } else {
+        // Handle error based on response status code
+        throw response.statusCode.toString();
+      }
+    } on DioError catch (e) {
+      // Handle Dio-specific errors
+      if (e.type == DioErrorType.connectTimeout ||
+          e.type == DioErrorType.receiveTimeout) {
+        throw "No Internet Connection";
+      } else if (e.type == DioErrorType.response) {
+        // Handle error response from server
+        throw e.response?.data['message'];
+      } else {
+        // Handle other Dio errors
+        throw e.message;
+      }
+    }
   }
 
   @override
   Future<dynamic> getGetTokenApiResponseWithPath(
       String url, String token, String path) async {
-    dynamic responseJson;
-
     try {
-      // Construct the URL with the provided path
-      final uri = Uri.parse('$url/$path');
-      final response = await http.get(uri, headers: {
-        'Authorization': 'Bearer $token'
-      }).timeout(const Duration(seconds: 10));
-      responseJson = returnResponse(response);
-    } on SocketException {
-      throw FetchDataException("No Internet Connection");
-    }
+      final dio = Dio(); // Create a Dio instance
+      final response = await dio.get(
+        '$url/$path',
+        options: Options(
+          headers: {
+            'Authorization': 'Bearer $token',
+          },
+        ),
+      );
 
-    return responseJson;
+      // Handle successful response
+      if (response.statusCode == 200) {
+        return response.data;
+      } else {
+        // Handle error based on response status code
+        throw response.statusCode.toString();
+      }
+    } on DioError catch (e) {
+      // Handle Dio-specific errors
+      if (e.type == DioErrorType.connectTimeout ||
+          e.type == DioErrorType.receiveTimeout) {
+        throw "No Internet Connection";
+      } else if (e.type == DioErrorType.response) {
+        // Handle error response from server
+        throw e.response?.data['message'];
+      } else {
+        // Handle other Dio errors
+        throw e.message;
+      }
+    }
   }
 
   @override
   Future<dynamic> getGetTokenApiResponseWithQuery(
       String url, String token, String query) async {
-    dynamic responseJson;
-
     try {
-      // Construct the URL with query parameters
-      final uri =
-          Uri.parse(url).replace(queryParameters: {'card_number': query});
-      final response = await http.get(uri, headers: {
-        'Authorization': 'Bearer $token'
-      }).timeout(const Duration(seconds: 10));
-      responseJson = returnResponse(response);
-    } on SocketException {
-      throw FetchDataException("No Internet Connection");
-    }
+      final dio = Dio(); // Create a Dio instance
+      final response = await dio.get(
+        url,
+        queryParameters: {'card_number': query},
+        options: Options(
+          headers: {
+            'Authorization': 'Bearer $token',
+          },
+        ),
+      );
 
-    return responseJson;
+      // Handle successful response
+      if (response.statusCode == 200) {
+        return response.data;
+      } else {
+        // Handle error based on response status code
+        throw response.statusCode.toString();
+      }
+    } on DioError catch (e) {
+      // Handle Dio-specific errors
+      if (e.type == DioErrorType.connectTimeout ||
+          e.type == DioErrorType.receiveTimeout) {
+        throw "No Internet Connection";
+      } else if (e.type == DioErrorType.response) {
+        // Handle error response from server
+        throw e.response?.data['message'];
+      } else {
+        // Handle other Dio errors
+        throw e.message;
+      }
+    }
   }
 
   @override
   Future<dynamic> getGetTokenApiResponseWithMultipleQuery(
       String url, String token, String query1, String query2) async {
-    dynamic responseJson;
-
     try {
-      final Map<String, String> queryParams = {
-        'start_date': query1,
-        'end_date': query2,
-      };
+      final dio = Dio(); // Create a Dio instance
+      final response = await dio.get(
+        url,
+        queryParameters: {
+          'start_date': query1,
+          'end_date': query2,
+        },
+        options: Options(
+          headers: {
+            'Authorization': 'Bearer $token',
+          },
+        ),
+      );
 
-      final Uri uri = Uri.parse(url).replace(queryParameters: queryParams);
-
-      final response = await http.get(
-        uri,
-        headers: {'Authorization': 'Bearer $token'},
-      ).timeout(const Duration(seconds: 10));
-
-      responseJson = returnResponse(response);
-    } on SocketException {
-      throw FetchDataException("No Internet Connection");
+      // Handle successful response
+      if (response.statusCode == 200) {
+        return response.data;
+      } else {
+        // Handle error based on response status code
+        throw response.statusCode.toString();
+      }
+    } on DioError catch (e) {
+      // Handle Dio-specific errors
+      if (e.type == DioErrorType.connectTimeout ||
+          e.type == DioErrorType.receiveTimeout) {
+        throw "No Internet Connection";
+      } else if (e.type == DioErrorType.response) {
+        // Handle error response from server
+        throw e.response?.data['message'];
+      } else {
+        // Handle other Dio errors
+        throw e.message;
+      }
     }
-
-    return responseJson;
   }
 
   @override
   Future getGetApiResponse(String url) async {
-    dynamic responseJson;
-
     try {
-      final response =
-          await http.get(Uri.parse(url)).timeout(const Duration(seconds: 10));
-      responseJson = returnResponse(response);
-    } on SocketException {
-      throw FetchDataException("No Internet Connection");
-    }
+      final dio = Dio(); // Create a Dio instance
+      final response = await dio.get(url);
 
-    return responseJson;
+      // Handle successful response
+      if (response.statusCode == 200) {
+        return response.data;
+      } else {
+        // Handle error based on response status code
+        throw response.statusCode.toString();
+      }
+    } on DioError catch (e) {
+      // Handle Dio-specific errors
+      if (e.type == DioErrorType.connectTimeout ||
+          e.type == DioErrorType.receiveTimeout) {
+        throw "No Internet Connection";
+      } else if (e.type == DioErrorType.response) {
+        // Handle error response from server
+        throw e.response?.data['message'];
+      } else {
+        // Handle other Dio errors
+        throw e.message;
+      }
+    }
   }
 
-  @override
+/*  @override
   Future getPostApiResponse(String url, dynamic data) async {
     dynamic responseJson;
 
@@ -115,38 +198,105 @@ class NetworkApiServices extends BaseApiServices {
     }
 
     return responseJson;
+  }*/
+
+  @override
+  Future getPostApiResponse(String url, dynamic data) async {
+    try {
+      final dio = Dio(); // Create a Dio instance
+      final response = await dio.post(url,data: data);
+
+      // Handle successful response
+      if (response.statusCode == 200) {
+        return response.data;
+      } else {
+        // Handle error based on response status code
+        throw response.statusCode.toString();
+      }
+    } on DioError catch (e) {
+      // Handle Dio-specific errors
+      if (e.type == DioErrorType.connectTimeout ||
+          e.type == DioErrorType.receiveTimeout) {
+        throw "No Internet Connection";
+      } else if (e.type == DioErrorType.response) {
+        // Handle error response from server
+        throw e.response?.data['message'];
+      } else {
+        // Handle other Dio errors
+        throw e.message;
+      }
+    }
   }
 
   @override
-  Future getPostTokenApiResponse(String url, String token, dynamic data) async {
-    dynamic responseJson;
-
+  Future<dynamic> getPostTokenApiResponse(String url, String token, dynamic data) async {
     try {
-      Response response = await post(Uri.parse(url),
-              headers: {'Authorization': 'Bearer $token'}, body: data)
-          .timeout(const Duration(seconds: 10));
-      responseJson = returnResponse(response);
-    } on SocketException {
-      throw FetchDataException("No Internet Connection");
-    }
+      final dio = Dio(); // Create a Dio instance
+      final response = await dio.post(
+        url,
+        data: data,
+        options: Options(
+          headers: {
+            'Authorization': 'Bearer $token',
+          },
+        ),
+      );
 
-    return responseJson;
+      // Handle successful response
+      if (response.statusCode == 200) {
+        return response.data;
+      } else {
+        // Handle error based on response status code
+        throw response.statusCode.toString();
+      }
+    } on DioError catch (e) {
+      // Handle Dio-specific errors
+      if (e.type == DioErrorType.connectTimeout ||
+          e.type == DioErrorType.receiveTimeout) {
+        throw "No Internet Connection";
+      } else if (e.type == DioErrorType.response) {
+        // Handle error response from server
+        throw e.response?.data['message'];
+      } else {
+        // Handle other Dio errors
+        throw e.message;
+      }
+    }
   }
 
   @override
-  Future getPostTokenNoBodyApiResponse(String url, String token) async {
-    dynamic responseJson;
-
+  Future<dynamic> getPostTokenNoBodyApiResponse(String url, String token) async {
     try {
-      Response response = await post(Uri.parse(url),
-          headers: {'Authorization': 'Bearer $token'})
-          .timeout(const Duration(seconds: 10));
-      responseJson = returnResponse(response);
-    } on SocketException {
-      throw FetchDataException("No Internet Connection");
-    }
+      final dio = Dio(); // Create a Dio instance
+      final response = await dio.post(
+        url,
+        options: Options(
+          headers: {
+            'Authorization': 'Bearer $token',
+          },
+        ),
+      );
 
-    return responseJson;
+      // Handle successful response
+      if (response.statusCode == 200) {
+        return response.data;
+      } else {
+        // Handle error based on response status code
+        throw response.statusCode.toString();
+      }
+    } on DioError catch (e) {
+      // Handle Dio-specific errors
+      if (e.type == DioErrorType.connectTimeout ||
+          e.type == DioErrorType.receiveTimeout) {
+        throw "No Internet Connection";
+      } else if (e.type == DioErrorType.response) {
+        // Handle error response from server
+        throw e.response?.data['message'];
+      } else {
+        // Handle other Dio errors
+        throw e.message;
+      }
+    }
   }
 
   dynamic returnResponse(http.Response response) {

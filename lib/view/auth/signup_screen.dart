@@ -311,38 +311,7 @@ class _SignUpScreenState extends State<SignUpScreen> {
                     Utils.flushBarErrorMessage(
                         "Please agree with the terms and conditions", context);
                   } else {
-                    await sendOtp(context, authViewMode);
-                    showDialog(
-                      context: context,
-                      builder: (context) => OtpPopup(
-                        isVerified: isVerifiedNotifier,
-                        // Pass isVerifiedNotifier
-                        onSubmit: (otp) async {
-                          // Convert the DateTime object to a string using DateFormat
-                          final formattedDate =
-                              DateFormat('yyyy-MM-dd').format(_selectedDate!);
-                          final Map<String, String> data = {
-                            'first_name': _firstNameController.text.toString(),
-                            'last_name': _lastNameController.text.toString(),
-                            'usr_email': _emailController.text.toString(),
-                            'phone': _phoneController.text.toString(),
-                            'gender': _selectedGender,
-                            'password': _passwordController.text.toString(),
-                            'otp': otp,
-                            'birth_date': formattedDate,
-                          };
-                          authViewMode.signUpApi(data, context).then((signUpResponse) async {
-                            if(signUpResponse.statusCode == 200){
-                              await logIn(context, authViewMode, _phoneController.text.toString(), _passwordController.text.toString()); // Perform sign-up operation
-                            }
-                          }).catchError((error) {
-                            if (kDebugMode) {
-                              print(error);
-                            }
-                          });
-                        },
-                      ),
-                    );
+                    await sendOtp(context, authViewMode, isVerifiedNotifier);
                   }
                 },
               ),
@@ -360,12 +329,43 @@ class _SignUpScreenState extends State<SignUpScreen> {
     );
   }
 
-  sendOtp(BuildContext context, AuthViewModel authViewMode) {
+  sendOtp(BuildContext context, AuthViewModel authViewMode, ValueNotifier<bool> isVerifiedNotifier) {
     final Map<String, String> data = {
       'phone': _phoneController.text.toString(),
       'email': _emailController.text.toString()
     };
     authViewMode.sendOTPApi(data, context);
+    showDialog(
+      context: context,
+      builder: (context) => OtpPopup(
+        isVerified: isVerifiedNotifier,
+        // Pass isVerifiedNotifier
+        onSubmit: (otp) async {
+          // Convert the DateTime object to a string using DateFormat
+          final formattedDate =
+          DateFormat('yyyy-MM-dd').format(_selectedDate!);
+          final Map<String, String> data = {
+            'first_name': _firstNameController.text.toString(),
+            'last_name': _lastNameController.text.toString(),
+            'usr_email': _emailController.text.toString(),
+            'phone': _phoneController.text.toString(),
+            'gender': _selectedGender,
+            'password': _passwordController.text.toString(),
+            'otp': otp,
+            'birth_date': formattedDate,
+          };
+          authViewMode.signUpApi(data, context).then((signUpResponse) async {
+            if(signUpResponse.statusCode == 200){
+              await logIn(context, authViewMode, _phoneController.text.toString(), _passwordController.text.toString()); // Perform sign-up operation
+            }
+          }).catchError((error) {
+            if (kDebugMode) {
+              print(error);
+            }
+          });
+        },
+      ),
+    );
   }
 
   logIn(BuildContext context, AuthViewModel authViewMode, String phone, String pass) {

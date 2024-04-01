@@ -50,7 +50,8 @@ class AuthViewModel with ChangeNotifier{
       }
     } catch (error) {
       setLoginLoading(false);
-      Utils.flushBarErrorMessage(extractErrorMessage(error.toString()), context);
+      //Utils.flushBarErrorMessage(extractErrorMessage(error.toString()), context);
+        Utils.flushBarErrorMessage(error.toString(), context);
       if (kDebugMode) {
         print(error.toString());
       }
@@ -123,7 +124,7 @@ class AuthViewModel with ChangeNotifier{
     setOTPSendLoading(true);
     _myRepo.sendOTPApi(data).then((value){
       setOTPSendLoading(false);
-      Utils.toastMessage("OTP send Successfully");
+      Utils.flushBarErrorMessage("OTP send Successfully", context);
       if (kDebugMode) {
         print(value.toString());
       }
