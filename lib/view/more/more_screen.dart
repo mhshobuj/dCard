@@ -46,40 +46,57 @@ class _MoreScreenState extends State<MoreScreen> {
                   child: Card(
                     elevation: 3,
                     margin: const EdgeInsets.symmetric(horizontal: 16),
-                    child: Padding(
-                      padding: const EdgeInsets.all(8.0),
-                      child: Column(
-                        children: [
-                          Row(
-                            mainAxisAlignment: MainAxisAlignment.center,
+                    child: Stack(
+                      alignment: Alignment.topRight,
+                      children: [
+                        Padding(
+                          padding: const EdgeInsets.all(8.0),
+                          child: Column(
                             children: [
-                              SizedBox(
-                                height: 100, // Adjust height as needed
-                                width: 100, // Adjust width as needed
-                                child: CircleAvatar(
-                                  backgroundImage: NetworkImage(
-                                    getUserDetailsResponse
-                                            ?.data?.usrProfilePic ??
-                                        '', // Update with actual profile image URL
+                              Row(
+                                mainAxisAlignment: MainAxisAlignment.center,
+                                children: [
+                                  SizedBox(
+                                    height: 100, // Adjust height as needed
+                                    width: 100, // Adjust width as needed
+                                    child: CircleAvatar(
+                                      backgroundImage: NetworkImage(
+                                        getUserDetailsResponse?.data?.usrProfilePic ??
+                                            '', // Update with actual profile image URL
+                                      ),
+                                    ),
                                   ),
-                                ),
+                                ],
+                              ),
+                              const SizedBox(height: 10),
+                              // Username Text
+                              Text(
+                                '${getUserDetailsResponse?.data?.firstName ?? ''} ${getUserDetailsResponse?.data?.lastName ?? ''}',
+                                style: const TextStyle(fontSize: 16),
+                              ),
+                              const SizedBox(height: 10),
+                              // Email Text
+                              Text(
+                                getUserDetailsResponse?.data?.usrEmail ?? '',
+                                style: const TextStyle(fontSize: 14),
                               ),
                             ],
                           ),
-                          const SizedBox(height: 10),
-                          // Username Text
-                          Text(
-                            '${getUserDetailsResponse?.data?.firstName ?? ''} ${getUserDetailsResponse?.data?.lastName ?? ''}',
-                            style: const TextStyle(fontSize: 16),
+                        ),
+                        Positioned(
+                          top: 8,
+                          right: 8,
+                          child: IconButton(
+                            icon: const Icon(Icons.edit, color: Colors.grey,),
+                            onPressed: () {
+                              Navigator.pushNamed(
+                                context,
+                                RoutesName.edit,
+                              );
+                            },
                           ),
-                          const SizedBox(height: 10),
-                          // Email Text
-                          Text(
-                            getUserDetailsResponse?.data?.usrEmail ?? '',
-                            style: const TextStyle(fontSize: 14),
-                          ),
-                        ],
-                      ),
+                        ),
+                      ],
                     ),
                   ),
                 ),
@@ -112,59 +129,6 @@ class _MoreScreenState extends State<MoreScreen> {
                 ),
               ],
             ),
-    );
-  }
-
-  void _showChangePasswordDialog(BuildContext context) {
-    String? oldPassword;
-    String? newPassword;
-    String? confirmNewPassword;
-
-    showDialog(
-      context: context,
-      builder: (BuildContext context) {
-        return AlertDialog(
-          title: const Text('Change Password'),
-          content: Column(
-            mainAxisSize: MainAxisSize.min,
-            children: [
-              TextFormField(
-                decoration: const InputDecoration(labelText: 'Old Password'),
-                onChanged: (value) => oldPassword = value,
-                obscureText: true,
-              ),
-              const SizedBox(height: 10),
-              TextFormField(
-                decoration: const InputDecoration(labelText: 'New Password'),
-                onChanged: (value) => newPassword = value,
-                obscureText: true,
-              ),
-              const SizedBox(height: 10),
-              TextFormField(
-                decoration: const InputDecoration(labelText: 'Confirm New Password'),
-                onChanged: (value) => confirmNewPassword = value,
-                obscureText: true,
-              ),
-            ],
-          ),
-          actions: [
-            TextButton(
-              onPressed: () {
-                // Validate input fields and perform password change logic
-                // Here you can implement your logic to validate passwords and perform password change
-                Navigator.of(context).pop();
-              },
-              style: TextButton.styleFrom(
-                backgroundColor: AppColors.buttonColor,
-              ),
-              child: const Text(
-                'Submit',
-                style: TextStyle(color: Colors.white),
-              ),
-            ),
-          ],
-        );
-      },
     );
   }
 

@@ -46,6 +46,7 @@ dependencies:
   package_info_plus: ^4.2.0
   flutter_phone_direct_caller: ^2.1.1
   dio: ^4.0.0
+  image_picker: ^1.0.4
 
 flutter_launcher_icons:
   android: true

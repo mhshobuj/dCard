@@ -35,4 +35,7 @@ class RoutesName{
 
   //about screen name
   static const String about = "about_screen";
+
+  //edit screen name
+  static const String edit = "edit_screen";
 }
