@@ -38,7 +38,10 @@ class _RewardsScreenState extends State<RewardsScreen> {
         onRefresh: _refresh,
         child: rewardListResponse == null
             ? const Center(
-          child: CircularProgressIndicator(), // Display a loading indicator
+          child: CircularProgressIndicator(
+            color: AppColors.buttonColor,
+            strokeWidth: 3,
+          ), // Display a loading indicator
         )
             : Column(
           crossAxisAlignment: CrossAxisAlignment.stretch,

@@ -1,9 +1,7 @@
 import 'dart:convert';
-import 'dart:io';
 import 'package:dma_card/data/app_exceptions.dart';
 import 'package:dma_card/data/network/BaseApiServices.dart';
 import 'package:http/http.dart' as http;
-import 'package:http/http.dart';
 import 'package:dio/dio.dart';
 
 
@@ -184,21 +182,6 @@ class NetworkApiServices extends BaseApiServices {
       }
     }
   }
-
-/*  @override
-  Future getPostApiResponse(String url, dynamic data) async {
-    dynamic responseJson;
-
-    try {
-      Response response = await post(Uri.parse(url), body: data)
-          .timeout(const Duration(seconds: 10));
-      responseJson = returnResponse(response);
-    } on SocketException {
-      throw FetchDataException("No Internet Connection");
-    }
-
-    return responseJson;
-  }*/
 
   @override
   Future getPostApiResponse(String url, dynamic data) async {

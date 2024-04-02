@@ -1,3 +1,4 @@
+import 'package:dma_card/model/base_response.dart';
 import 'package:dma_card/model/user_details_response.dart';
 import 'package:dma_card/repository/more_repository.dart';
 import 'package:flutter/cupertino.dart';
@@ -18,6 +19,26 @@ class MoreViewModel with ChangeNotifier{
       }
 
       return getUserDetailsResponse; // Return the cardResponse
+    } catch (error) {
+      if (kDebugMode) {
+        Utils.flushBarErrorMessage(error.toString(), context);
+        print(error.toString());
+      }
+      // Handle the error and return null or throw it again
+      rethrow;
+    }
+  }
+
+  Future<BaseResponse> updateProfile(String token, dynamic data, BuildContext context) async {
+    try {
+      final BaseResponse updateProfile = await _myRepo.updateProfile(token, data);
+
+      if (kDebugMode) {
+        print(updateProfile.toJson());
+        print(updateProfile.message);
+      }
+
+      return updateProfile; // Return the cardResponse
     } catch (error) {
       if (kDebugMode) {
         Utils.flushBarErrorMessage(error.toString(), context);

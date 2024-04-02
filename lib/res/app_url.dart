@@ -22,5 +22,6 @@ class AppUrl {
   static var changePass = '${baseUrl}auth/user/password/change/';
   static var cardInactive = '${baseUrl}nfccards/card/disable/';
   static var cardEnable = '${baseUrl}nfccards/card/enable/';
+  static var updateProfile = '${baseUrl}auth/user/profile/update/';
 
 }

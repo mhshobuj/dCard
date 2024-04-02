@@ -1,5 +1,6 @@
 import 'dart:io';
 
+import 'package:dio/dio.dart';
 import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
 import 'package:image_picker/image_picker.dart';
@@ -7,6 +8,7 @@ import 'package:provider/provider.dart';
 
 import '../../model/user_details_response.dart';
 import '../../res/color.dart';
+import '../../utils/routes/routes_name.dart';
 import '../../view_model/login_view_model.dart';
 import '../../view_model/more_view_model.dart';
 
@@ -14,8 +16,8 @@ class EditScreen extends StatefulWidget {
   final String? imageUrl;
   final Function(String)? onImageChanged;
 
-  const EditScreen({Key? key, this.imageUrl, this.onImageChanged}) : super(key: key);
-
+  const EditScreen({Key? key, this.imageUrl, this.onImageChanged})
+      : super(key: key);
 
   @override
   _EditScreenState createState() => _EditScreenState();
@@ -23,26 +25,30 @@ class EditScreen extends StatefulWidget {
 
 class _EditScreenState extends State<EditScreen> {
   UserDetailsResponse? getUserDetailsResponse;
-  final _picker = ImagePicker(); // Create an ImagePicker instance
+  File? _imgFile;
 
-  Future<void> _selectImageFromGallery() async {
-    final pickedFile = await _picker.pickImage(
+
+  _selectImageFromGallery() async {
+    final ImagePicker picker = ImagePicker();
+    final XFile? img = await picker.pickImage(
       source: ImageSource.gallery,
     );
-
-    if (pickedFile != null) {
-      widget.onImageChanged?.call(pickedFile.path); // Call callback with path
-    }
+    if (img == null) return;
+    setState(() {
+      _imgFile = File(img.path); // convert it to a Dart:io file
+    });
   }
 
-  Future<void> _captureImageFromCamera() async {
-    final pickedFile = await _picker.pickImage(
-      source: ImageSource.camera,
+  _captureImageFromCamera() async {
+    final ImagePicker picker = ImagePicker();
+    final XFile? img = await picker.pickImage(
+      source: ImageSource.camera, // alternatively, use ImageSource.gallery
+      maxWidth: 400,
     );
-
-    if (pickedFile != null) {
-      widget.onImageChanged?.call(pickedFile.path); // Call callback with path
-    }
+    if (img == null) return;
+    setState(() {
+      _imgFile = File(img.path); // convert it to a Dart:io file
+    });
   }
 
   // Placeholder values
@@ -51,6 +57,7 @@ class _EditScreenState extends State<EditScreen> {
   String? _email;
   String? _phone;
   String? _address;
+  String? _birthDay;
   bool isLoading = false; // Track loading state
 
   @override
@@ -59,6 +66,12 @@ class _EditScreenState extends State<EditScreen> {
     WidgetsBinding.instance.addPostFrameCallback((_) {
       // Fetch user details after the widget is built
       getUserDetails();
+    });
+  }
+
+  void onImageChanged(String imagePath) {
+    setState(() {
+// Update state with selected image path
     });
   }
 
@@ -79,8 +92,10 @@ class _EditScreenState extends State<EditScreen> {
       ),
       body: isLoading
           ? const Center(
-              child:
-                  CircularProgressIndicator()) // Show loading indicator if isLoading is true
+              child: CircularProgressIndicator(
+              color: AppColors.buttonColor,
+              strokeWidth: 3,
+            )) // Show loading indicator if isLoading is true
           : buildEditProfileForm(),
     );
   }
@@ -113,8 +128,17 @@ class _EditScreenState extends State<EditScreen> {
                                 // Call method to select image from gallery
                                 _selectImageFromGallery();
                               },
-                              child: Text("Choose from Gallery"),
+                              style: ButtonStyle(
+                                backgroundColor:
+                                    MaterialStateProperty.all<Color>(AppColors
+                                        .buttonColor), // Change the color here
+                              ),
+                              child: const Text(
+                                "Choose from Gallery",
+                                style: TextStyle(color: Colors.white),
+                              ),
                             ),
+                            const SizedBox(height: 20),
                             ElevatedButton(
                               onPressed: () {
                                 // Handle camera button press
@@ -122,7 +146,15 @@ class _EditScreenState extends State<EditScreen> {
                                 // Call method to capture image from camera
                                 _captureImageFromCamera();
                               },
-                              child: Text("Take a Photo"),
+                              style: ButtonStyle(
+                                backgroundColor:
+                                    MaterialStateProperty.all<Color>(AppColors
+                                        .buttonColor), // Change the color here
+                              ),
+                              child: const Text(
+                                "Take a Photo",
+                                style: TextStyle(color: Colors.white),
+                              ),
                             ),
                           ],
                         ),
@@ -132,10 +164,21 @@ class _EditScreenState extends State<EditScreen> {
                   child: SizedBox(
                     height: 100,
                     width: 100,
-                    child: CircleAvatar(
-                      backgroundImage: widget.imageUrl != null
-                          ? FileImage(File(widget.imageUrl!))
-                          : null,
+                    child: Container(
+                      padding: const EdgeInsets.all(2), // Add padding inside the Container
+                      decoration: BoxDecoration(
+                        shape: BoxShape.circle,
+                        border: Border.all(
+                          color: Colors.black, // Add color for the border
+                          width: 2, // Add width for the border
+                        ),
+                      ),
+                      child: CircleAvatar(
+                        radius: 20,
+                        backgroundImage: (_imgFile == null)
+                            ? const AssetImage('assets/images/upload_image.png')
+                            : FileImage(_imgFile!) as ImageProvider,
+                      ),
                     ),
                   ),
                 ),
@@ -201,12 +244,21 @@ class _EditScreenState extends State<EditScreen> {
                 _address = value;
               },
             ),
+            const SizedBox(height: 30),
             // Save Button
             ElevatedButton(
               onPressed: () {
                 // Implement save functionality
+                updateProfile();
               },
-              child: const Text('Save'),
+              style: ButtonStyle(
+                backgroundColor: MaterialStateProperty.all<Color>(
+                    AppColors.buttonColor), // Change the color here
+              ),
+              child: const Text(
+                'Save',
+                style: TextStyle(color: Colors.white),
+              ),
             ),
           ],
         ),
@@ -233,8 +285,8 @@ class _EditScreenState extends State<EditScreen> {
           _lastName = getUserDetailsResponse.data?.lastName;
           _email = getUserDetailsResponse.data?.usrEmail;
           _phone = getUserDetailsResponse.data?.userPhone?.phnCell;
-          _address =
-              getUserDetailsResponse.data?.userAddress?.addressLine1.toString();
+          _address = getUserDetailsResponse.data?.userAddress?.addressLine1.toString();
+          _birthDay = getUserDetailsResponse.data?.birthDate.toString();
           isLoading = false; // Stop loading indicator
         });
       }).catchError((error) {
@@ -254,6 +306,61 @@ class _EditScreenState extends State<EditScreen> {
       setState(() {
         isLoading = false; // Stop loading indicator
       });
+    });
+  }
+
+  Future<void> updateProfile() async {
+    final moreViewModel = Provider.of<MoreViewModel>(context, listen: false);
+    final tokenViewModel = Provider.of<TokenViewModel>(context, listen: false);
+
+    final FormData formData = FormData(); // Create FormData object
+
+    // Convert Map to Iterable using entries
+    final fieldsMap = {
+      'first_name': _firstName.toString(),
+      'last_name': _lastName.toString(),
+      'birth_date': _birthDay.toString(),
+      'usr_email': _email.toString(),
+      'address_line_1': _address.toString(),
+      'city': 'Dhaka',
+      'state': 'BD',
+      'upazila': 'Dhaka',
+      'post_code': '1200',
+    };
+    formData.fields.addAll(fieldsMap.entries);
+
+    // Include profile picture only if _imgFile is not null
+    if (_imgFile != null) {
+      try {
+        final multipartFile = await MultipartFile.fromFile(_imgFile!.path,
+            filename: _imgFile!.path.split('/').last); // Extract filename
+        formData.files.add(MapEntry('profile_pic', multipartFile));
+      } catch (error) {
+        print('Error creating MultipartFile: $error');
+        // Handle error (e.g., display user-friendly message)
+        return; // Exit the function if error occurs
+      }
+    }
+
+    tokenViewModel.getToken().then((loginModel) {
+      final token = loginModel.token;
+      moreViewModel
+          .updateProfile(token!, formData, context) // Pass formData instead of data
+          .then((getUserDetailsResponse) {
+        if (getUserDetailsResponse.statusCode == 200) {
+          Navigator.pushNamed(context, RoutesName.more);
+        }
+      }).catchError((error) {
+        if (kDebugMode) {
+          print('Error updating profile: $error');
+        }
+        // Handle general errors (e.g., display user-friendly message)
+      });
+    }).catchError((error) {
+      if (kDebugMode) {
+        print('Error getting token: $error');
+      }
+      // Handle token retrieval errors (e.g., display user-friendly message)
     });
   }
 }

@@ -36,7 +36,10 @@ class _MoreScreenState extends State<MoreScreen> {
     return Scaffold(
       body: isLoading
           ? const Center(
-              child: CircularProgressIndicator()) // Show loading indicator
+              child: CircularProgressIndicator(
+                color: AppColors.buttonColor,
+                strokeWidth: 3,
+              )) // Show loading indicator
           : ListView(
               padding: const EdgeInsets.symmetric(vertical: 20),
               children: [
@@ -61,7 +64,8 @@ class _MoreScreenState extends State<MoreScreen> {
                                     width: 100, // Adjust width as needed
                                     child: CircleAvatar(
                                       backgroundImage: NetworkImage(
-                                        getUserDetailsResponse?.data?.usrProfilePic ??
+                                        getUserDetailsResponse
+                                                ?.data?.usrProfilePic ??
                                             '', // Update with actual profile image URL
                                       ),
                                     ),
@@ -87,7 +91,10 @@ class _MoreScreenState extends State<MoreScreen> {
                           top: 8,
                           right: 8,
                           child: IconButton(
-                            icon: const Icon(Icons.edit, color: Colors.grey,),
+                            icon: const Icon(
+                              Icons.edit,
+                              color: Colors.grey,
+                            ),
                             onPressed: () {
                               Navigator.pushNamed(
                                 context,
@@ -112,8 +119,7 @@ class _MoreScreenState extends State<MoreScreen> {
                   Navigator.pushNamed(context, RoutesName.about);
                 }),
                 _buildListItemChangePass(
-                    context, 'Change Password', Icons.security_outlined, () {
-                }),
+                    context, 'Change Password', Icons.security_outlined, () {}),
                 _buildListItem(context, 'Logout', Icons.logout, () {
                   _logout(context, tokenViewModel);
                 }),
@@ -132,7 +138,8 @@ class _MoreScreenState extends State<MoreScreen> {
     );
   }
 
-  Widget _buildListItemChangePass(BuildContext context, String title, IconData icon, Function() onTap) {
+  Widget _buildListItemChangePass(
+      BuildContext context, String title, IconData icon, Function() onTap) {
     return InkWell(
       onTap: () {
         if (title == 'Change Password') {
@@ -156,7 +163,6 @@ class _MoreScreenState extends State<MoreScreen> {
       ),
     );
   }
-
 
   Widget _buildListItem(
       BuildContext context, String title, IconData icon, Function onTap) {

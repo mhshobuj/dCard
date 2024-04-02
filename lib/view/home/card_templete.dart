@@ -60,7 +60,8 @@ class _CardTemplateState extends State<CardTemplate> {
                       style: ElevatedButton.styleFrom(
                         backgroundColor: AppColors.buttonColor,
                       ),
-                      child: const Text('Apply Card'),
+                      child: const Text('Apply Card',
+                        style: TextStyle(color: Colors.white),),
                     ),
                   ),
                 ),
@@ -159,7 +160,9 @@ class _CardTemplateState extends State<CardTemplate> {
                       ),
                       child: const Text(
                         'Press to Activate',
-                        style: TextStyle(fontSize: 16, fontWeight: FontWeight.bold), // Adjust as needed
+                        style: TextStyle(
+                            color: Colors.white,
+                            fontSize: 16, fontWeight: FontWeight.bold), // Adjust as needed
                       ),
                     ),
 
@@ -214,7 +217,9 @@ class _CardTemplateState extends State<CardTemplate> {
                           // Text (conditionally hidden)
                           Text(
                             isButtonLoading ? '' : 'Pay Now',
-                            style: const TextStyle(fontSize: 16, fontWeight: FontWeight.bold), // Adjust as needed
+                            style: const TextStyle(
+                                color: Colors.white,
+                                fontSize: 16, fontWeight: FontWeight.bold), // Adjust as needed
                           ),
                         ],
                       ),

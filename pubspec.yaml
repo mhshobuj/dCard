@@ -46,7 +46,7 @@ dependencies:
   package_info_plus: ^6.0.0
   flutter_phone_direct_caller: ^2.1.1
   dio: ^4.0.0
-  image_picker: ^1.0.4
+  image_picker: ^1.0.7
 
 flutter_launcher_icons:
   android: true
@@ -82,6 +82,8 @@ flutter:
      - assets/images/dcard_logo.png
      - assets/images/details.png
      - assets/images/customer_service.png
+     - assets/images/user.png
+     - assets/images/upload_image.png
 
   # An image asset can refer to one or more resolution-specific "variants", see
   # https://flutter.dev/assets-and-images/#resolution-aware
